@@ -4,12 +4,36 @@ using StardewValley;
 using StardewValley.Objects;
 using StardewValley.Monsters;
 using StardewValley.Tools;
+using SObject = StardewValley.Object;
 using System.Collections.Generic;
 
 namespace modtools;
 
 public class ModEntry : Mod
 {
+    // 资源类物品ID白名单
+    private static readonly HashSet<int> ResourceItemIds = new()
+    {
+        388, // 木头
+        390, // 石头
+        382, // 煤炭
+        771, // 纤维
+        330, // 粘土
+        378, // 铜矿
+        380, // 铁矿
+        384, // 金矿
+        386, // 铱矿
+        709, // 硬木
+        92,  // 树液
+        766, // 史莱姆
+        80,  // 石英
+        338, // 精炼石英
+        767, // 蝙蝠翅膀
+        684, // 虫肉
+        768, // 太阳精华
+        769  // 虚空精华
+    };
+
     public override void Entry(IModHelper helper)
     {
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
@@ -25,13 +49,16 @@ public class ModEntry : Mod
             if (item == null || item.Stack <= 0)
                 continue;
 
-            // 只对获得的物品进行处理
-            int extra = item.Stack * 2; // 已获得1份，再加2份=3倍
-            if (extra > 0)
+            // 只对资源类物品ID白名单中的物品进行处理
+            if (item is SObject obj && ResourceItemIds.Contains(obj.ParentSheetIndex))
             {
-                var cloned = item.getOne();
-                cloned.Stack = extra;
-                Game1.player.addItemToInventory(cloned);
+                int extra = item.Stack * 2; // 已获得1份，再加2份=3倍
+                if (extra > 0)
+                {
+                    var cloned = item.getOne();
+                    cloned.Stack = extra;
+                    Game1.player.addItemToInventory(cloned);
+                }
             }
         }
     }
