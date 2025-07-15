@@ -11,6 +11,7 @@ using StardewValley.Menus;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI.Utilities;
 
 namespace modtools;
 
@@ -24,7 +25,18 @@ public interface IGenericModConfigMenuApi
 public class ModConfig
 {
     public int Multiplier { get; set; } = 3;
-    public float FishDifficultyMultiplier { get; set; } = 1.0f; // 1.0 = normal, <1 easier, >1 harder
+    // Fishing options
+    public bool AlwaysPerfect { get; set; } = false;
+    public bool AlwaysFindTreasure { get; set; } = false;
+    public bool InstantCatchFish { get; set; } = false;
+    public bool InstantCatchTreasure { get; set; } = false;
+    public bool EasierFishing { get; set; } = false;
+    public float FishDifficultyMultiplier { get; set; } = 1.0f;
+    public float FishDifficultyAdditive { get; set; } = 0.0f;
+    public float LossAdditive { get; set; } = 2 / 1000f;
+    public bool InfiniteTackle { get; set; } = true;
+    public bool InfiniteBait { get; set; } = true;
+    public KeybindList ReloadKey { get; set; } = new(SButton.F5);
 }
 
 public class ModEntry : Mod
@@ -54,18 +66,23 @@ public class ModEntry : Mod
 
     // 防递归锁
     private bool isGivingBonus = false;
+    // Suppress CS8618: Config is initialized in Entry() by SMAPI
     private ModConfig Config = null!;
     private int EffectiveMultiplier =>
         Config.Multiplier < 3 ? 3 :
         Config.Multiplier > 50 ? 50 :
         Config.Multiplier;
+    private readonly PerScreen<bool> BeganFishingGame = new();
+    private readonly PerScreen<int> UpdateIndex = new();
 
     public override void Entry(IModHelper helper)
     {
+        // CommonHelper.RemoveObsoleteFiles(this, "FishingMod.pdb"); // Not needed
         Config = helper.ReadConfig<ModConfig>();
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
-        helper.Events.Display.MenuChanged += OnMenuChanged;
-        this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}, FishDifficultyMultiplier: {Config.FishDifficultyMultiplier}", LogLevel.Info);
+        helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+        helper.Events.Input.ButtonsChanged += OnButtonsChanged;
+        this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}", LogLevel.Info);
 
         // 注册快捷键监听，按K键打开自定义菜单
         helper.Events.Input.ButtonPressed += OnButtonPressed;
@@ -119,6 +136,71 @@ public class ModEntry : Mod
             val => { Config.FishDifficultyMultiplier = val / 100f; Helper.WriteConfig(Config); },
             10, 200
         );
+    }
+
+    private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
+    {
+        if (!Context.IsWorldReady)
+            return;
+        // Infinite bait/tackle
+        if (e.IsOneSecond && (Config.InfiniteBait || Config.InfiniteTackle))
+        {
+            if (Game1.player.CurrentTool is FishingRod rod)
+            {
+                if (Config.InfiniteBait && rod.attachments?.Length > 0 && rod.attachments[0] != null)
+                    rod.attachments[0].Stack = rod.attachments[0].maximumStackSize();
+                if (Config.InfiniteTackle && rod.attachments?.Length > 1 && rod.attachments[1] != null)
+                    rod.attachments[1].uses.Value = 0;
+            }
+        }
+        // Fishing minigame logic
+        if (Game1.activeClickableMenu is BobberBar bobber)
+        {
+            // Begin fishing game
+            if (!BeganFishingGame.Value && UpdateIndex.Value > 15)
+            {
+                // Do these things once per fishing minigame, 1/4 second after it updates
+                bobber.difficulty *= Config.FishDifficultyMultiplier;
+                bobber.difficulty += Config.FishDifficultyAdditive;
+                if (Config.AlwaysFindTreasure)
+                    bobber.treasure = true;
+                if (Config.InstantCatchFish)
+                {
+                    if (bobber.treasure)
+                        bobber.treasureCaught = true;
+                    bobber.distanceFromCatching += 100;
+                }
+                if (Config.InstantCatchTreasure)
+                    if (bobber.treasure || Config.AlwaysFindTreasure)
+                        bobber.treasureCaught = true;
+                if (Config.EasierFishing)
+                {
+                    bobber.difficulty = Math.Max(15, Math.Max(bobber.difficulty, 60));
+                    bobber.motionType = 2;
+                }
+                BeganFishingGame.Value = true;
+            }
+            if (UpdateIndex.Value < 20)
+                UpdateIndex.Value++;
+            if (Config.AlwaysPerfect)
+                bobber.perfect = true;
+            if (!bobber.bobberInBar)
+                bobber.distanceFromCatching += Config.LossAdditive;
+        }
+        else
+        {
+            // End fishing game
+            BeganFishingGame.Value = false;
+            UpdateIndex.Value = 0;
+        }
+    }
+    private void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)
+    {
+        if (Config.ReloadKey.JustPressed())
+        {
+            Config = Helper.ReadConfig<ModConfig>();
+            Monitor.Log("Config reloaded", LogLevel.Info);
+        }
     }
 
     private void OnInventoryChanged(object? sender, InventoryChangedEventArgs e)
