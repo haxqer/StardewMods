@@ -24,6 +24,7 @@ public interface IGenericModConfigMenuApi
 public class ModConfig
 {
     public int Multiplier { get; set; } = 3;
+    public float FishDifficultyMultiplier { get; set; } = 1.0f; // 1.0 = normal, <1 easier, >1 harder
 }
 
 public class ModEntry : Mod
@@ -64,7 +65,7 @@ public class ModEntry : Mod
         Config = helper.ReadConfig<ModConfig>();
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
         helper.Events.Display.MenuChanged += OnMenuChanged;
-        this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}", LogLevel.Info);
+        this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}, FishDifficultyMultiplier: {Config.FishDifficultyMultiplier}", LogLevel.Info);
 
         // 注册快捷键监听，按K键打开自定义菜单
         helper.Events.Input.ButtonPressed += OnButtonPressed;
@@ -108,6 +109,15 @@ public class ModEntry : Mod
             () => Config.Multiplier,
             val => { Config.Multiplier = val; Helper.WriteConfig(Config); },
             3, 50
+        );
+        // Add fish difficulty multiplier config (scaled by 100 for int slider)
+        api.RegisterClampedOption(
+            this.ModManifest,
+            "FishDifficultyMultiplier",
+            "0.1-2.0 (lower = easier)",
+            () => (int)(Config.FishDifficultyMultiplier * 100),
+            val => { Config.FishDifficultyMultiplier = val / 100f; Helper.WriteConfig(Config); },
+            10, 200
         );
     }
 
@@ -170,20 +180,23 @@ public class ModEntry : Mod
         {
             try
             {
-                // 1. 降低难度
+                // 1. 降低难度（可配置）
                 var fishField = this.Helper.Reflection.GetField<object>(bobberBar, "fish");
                 var fish = fishField.GetValue();
                 var fishType = fish.GetType();
                 var difficultyProp = fishType.GetProperty("difficulty");
                 if (difficultyProp != null)
                 {
-                    difficultyProp.SetValue(fish, 10);
+                    object? value = difficultyProp.GetValue(fish);
+                    if (value is int originalDifficulty)
+                    {
+                        int newDifficulty = Math.Max(1, (int)(originalDifficulty * Config.FishDifficultyMultiplier));
+                        difficultyProp.SetValue(fish, newDifficulty);
+                    }
                 }
-
                 // 2. 增大绿色条
                 var barHeightField = this.Helper.Reflection.GetField<int>(bobberBar, "bobberBarHeight");
                 barHeightField.SetValue(400); // 最大568，默认60-300
-
                 // 3. 可选：自动完成小游戏
                 // var distanceFromCatchingField = this.Helper.Reflection.GetField<float>(bobberBar, "distanceFromCatching");
                 // distanceFromCatchingField.SetValue(1f); // 直接满进度
@@ -203,14 +216,18 @@ public class MultiplierConfigMenu : IClickableMenu
     private Action saveAction;
     private ClickableComponent plusButton;
     private ClickableComponent minusButton;
+    private ClickableComponent plusFishButton;
+    private ClickableComponent minusFishButton;
 
     public MultiplierConfigMenu(ModConfig config, Action saveAction)
-        : base(Game1.viewport.Width / 2 - 150, Game1.viewport.Height / 2 - 75, 300, 150)
+        : base(Game1.viewport.Width / 2 - 150, Game1.viewport.Height / 2 - 75, 300, 200)
     {
         this.config = config;
         this.saveAction = saveAction;
         plusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 210, yPositionOnScreen + 70, 32, 32), "Plus");
         minusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 80, yPositionOnScreen + 70, 32, 32), "Minus");
+        plusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 210, yPositionOnScreen + 120, 32, 32), "PlusFish");
+        minusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 80, yPositionOnScreen + 120, 32, 32), "MinusFish");
     }
 
     public override void draw(Microsoft.Xna.Framework.Graphics.SpriteBatch b)
@@ -225,6 +242,10 @@ public class MultiplierConfigMenu : IClickableMenu
         // 加减按钮（直接用文本）
         b.DrawString(Game1.smallFont, "+", new Vector2(xPositionOnScreen + 210, yPositionOnScreen + 70), Color.Black);
         b.DrawString(Game1.smallFont, "-", new Vector2(xPositionOnScreen + 80, yPositionOnScreen + 70), Color.Black);
+        // 鱼难度倍数
+        b.DrawString(Game1.smallFont, $"Fish Difficulty x{config.FishDifficultyMultiplier:F2}", new Vector2(xPositionOnScreen + 60, yPositionOnScreen + 120), Color.Black);
+        b.DrawString(Game1.smallFont, "+", new Vector2(xPositionOnScreen + 210, yPositionOnScreen + 170), Color.Black);
+        b.DrawString(Game1.smallFont, "-", new Vector2(xPositionOnScreen + 80, yPositionOnScreen + 170), Color.Black);
         // 鼠标
         drawMouse(b);
     }
@@ -245,6 +266,24 @@ public class MultiplierConfigMenu : IClickableMenu
             if (config.Multiplier > 3)
             {
                 config.Multiplier--;
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (plusFishButton.containsPoint(x, y))
+        {
+            if (config.FishDifficultyMultiplier < 2.0f)
+            {
+                config.FishDifficultyMultiplier = MathF.Min(2.0f, config.FishDifficultyMultiplier + 0.05f);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (minusFishButton.containsPoint(x, y))
+        {
+            if (config.FishDifficultyMultiplier > 0.1f)
+            {
+                config.FishDifficultyMultiplier = MathF.Max(0.1f, config.FishDifficultyMultiplier - 0.05f);
                 saveAction();
                 Game1.playSound("drumkit6");
             }
