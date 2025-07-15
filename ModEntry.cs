@@ -34,6 +34,9 @@ public class ModEntry : Mod
         769  // 虚空精华
     };
 
+    // 防递归锁
+    private bool isGivingBonus = false;
+
     public override void Entry(IModHelper helper)
     {
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
@@ -44,20 +47,26 @@ public class ModEntry : Mod
         if (!Context.IsWorldReady || !e.IsLocalPlayer)
             return;
 
-        foreach (var item in e.Added)
+        if (isGivingBonus)
+            return;
+
+        foreach (var entry in e.QuantityChanged)
         {
-            if (item == null || item.Stack <= 0)
+            var item = entry.Item;
+            if (item == null || entry.NewSize <= entry.OldSize)
                 continue;
 
-            // 只对资源类物品ID白名单中的物品进行处理
             if (item is SObject obj && ResourceItemIds.Contains(obj.ParentSheetIndex))
             {
-                int extra = item.Stack * 2; // 已获得1份，再加2份=3倍
+                int delta = entry.NewSize - entry.OldSize;
+                int extra = delta * 2; // 已获得N，再加2N=3倍
                 if (extra > 0)
                 {
                     var cloned = item.getOne();
                     cloned.Stack = extra;
+                    isGivingBonus = true;
                     Game1.player.addItemToInventory(cloned);
+                    isGivingBonus = false;
                 }
             }
         }
