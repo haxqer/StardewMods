@@ -50,6 +50,7 @@ public class ModEntry : Mod
         if (isGivingBonus)
             return;
 
+        // 处理堆叠数量变化
         foreach (var entry in e.QuantityChanged)
         {
             var item = entry.Item;
@@ -60,6 +61,28 @@ public class ModEntry : Mod
             {
                 int delta = entry.NewSize - entry.OldSize;
                 int extra = delta * 2; // 已获得N，再加2N=3倍
+                if (extra > 0)
+                {
+                    var cloned = item.getOne();
+                    cloned.Stack = extra;
+                    isGivingBonus = true;
+                    Game1.player.addItemToInventory(cloned);
+                    isGivingBonus = false;
+                }
+            }
+        }
+
+        // 处理新增物品堆叠
+        foreach (var item in e.Added)
+        {
+            if (item is SObject obj && ResourceItemIds.Contains(obj.ParentSheetIndex))
+            {
+                if (item.Stack > 1)
+                {
+                    continue;
+                }
+
+                int extra = item.Stack * 2; // 新增N，再加2N=3倍
                 if (extra > 0)
                 {
                     var cloned = item.getOne();
