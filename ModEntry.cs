@@ -7,8 +7,19 @@ using StardewValley.Tools;
 using SObject = StardewValley.Object;
 using System.Collections.Generic;
 using System;
+using StardewValley.Menus;
+using System.Reflection;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace modtools;
+
+// GMCM API interface
+public interface IGenericModConfigMenuApi
+{
+    void RegisterModConfig(IManifest mod, Action revertToDefault, Action saveToFile);
+    void RegisterClampedOption(IManifest mod, string optionName, string optionDesc, Func<int> optionGet, Action<int> optionSet, int min, int max);
+}
 
 public class ModConfig
 {
@@ -52,7 +63,52 @@ public class ModEntry : Mod
     {
         Config = helper.ReadConfig<ModConfig>();
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
+        helper.Events.Display.MenuChanged += OnMenuChanged;
         this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}", LogLevel.Info);
+
+        // 注册快捷键监听，按K键打开自定义菜单
+        helper.Events.Input.ButtonPressed += OnButtonPressed;
+    }
+
+    private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
+    {
+        if (!Context.IsWorldReady || !Context.IsPlayerFree)
+            return;
+        if (e.Button == SButton.K)
+        {
+            Game1.activeClickableMenu = new MultiplierConfigMenu(Config, SaveConfig);
+        }
+    }
+
+    private void SaveConfig()
+    {
+        Helper.WriteConfig(Config);
+        this.Monitor.Log($"Multiplier set to: {Config.Multiplier}", LogLevel.Info);
+    }
+
+    private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+    {
+        this.Monitor.Log("OnGameLaunched called", LogLevel.Info);
+        var api = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+        if (api is null)
+        {
+            this.Monitor.Log("GMCM API not found", LogLevel.Warn);
+            return;
+        }
+        this.Monitor.Log("GMCM API found, registering config", LogLevel.Info);
+        api.RegisterModConfig(
+            this.ModManifest,
+            () => Config = new ModConfig(),
+            () => Helper.WriteConfig(Config)
+        );
+        api.RegisterClampedOption(
+            this.ModManifest,
+            "Multiplier",
+            "3-50",
+            () => Config.Multiplier,
+            val => { Config.Multiplier = val; Helper.WriteConfig(Config); },
+            3, 50
+        );
     }
 
     private void OnInventoryChanged(object? sender, InventoryChangedEventArgs e)
@@ -105,6 +161,97 @@ public class ModEntry : Mod
                     isGivingBonus = false;
                 }
             }
+        }
+    }
+
+    private void OnMenuChanged(object? sender, MenuChangedEventArgs e)
+    {
+        if (e.NewMenu is BobberBar bobberBar)
+        {
+            try
+            {
+                // 1. 降低难度
+                var fishField = this.Helper.Reflection.GetField<object>(bobberBar, "fish");
+                var fish = fishField.GetValue();
+                var fishType = fish.GetType();
+                var difficultyProp = fishType.GetProperty("difficulty");
+                if (difficultyProp != null)
+                {
+                    difficultyProp.SetValue(fish, 10);
+                }
+
+                // 2. 增大绿色条
+                var barHeightField = this.Helper.Reflection.GetField<int>(bobberBar, "bobberBarHeight");
+                barHeightField.SetValue(400); // 最大568，默认60-300
+
+                // 3. 可选：自动完成小游戏
+                // var distanceFromCatchingField = this.Helper.Reflection.GetField<float>(bobberBar, "distanceFromCatching");
+                // distanceFromCatchingField.SetValue(1f); // 直接满进度
+            }
+            catch (Exception ex)
+            {
+                this.Monitor.Log($"Error simplifying fishing: {ex}", LogLevel.Error);
+            }
+        }
+    }
+}
+
+// 自定义Multiplier配置菜单
+public class MultiplierConfigMenu : IClickableMenu
+{
+    private ModConfig config;
+    private Action saveAction;
+    private ClickableComponent plusButton;
+    private ClickableComponent minusButton;
+
+    public MultiplierConfigMenu(ModConfig config, Action saveAction)
+        : base(Game1.viewport.Width / 2 - 150, Game1.viewport.Height / 2 - 75, 300, 150)
+    {
+        this.config = config;
+        this.saveAction = saveAction;
+        plusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 210, yPositionOnScreen + 70, 32, 32), "Plus");
+        minusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 80, yPositionOnScreen + 70, 32, 32), "Minus");
+    }
+
+    public override void draw(Microsoft.Xna.Framework.Graphics.SpriteBatch b)
+    {
+        base.draw(b);
+        // 背景
+        IClickableMenu.drawTextureBox(b, xPositionOnScreen, yPositionOnScreen, width, height, Color.White);
+        // 标题
+        b.DrawString(Game1.smallFont, "Resource Multiplier", new Vector2(xPositionOnScreen + width / 2 - 110, yPositionOnScreen + 20), Color.Black);
+        // 当前值
+        b.DrawString(Game1.smallFont, config.Multiplier.ToString(), new Vector2(xPositionOnScreen + 140, yPositionOnScreen + 70), Color.Black);
+        // 加减按钮（直接用文本）
+        b.DrawString(Game1.smallFont, "+", new Vector2(xPositionOnScreen + 210, yPositionOnScreen + 70), Color.Black);
+        b.DrawString(Game1.smallFont, "-", new Vector2(xPositionOnScreen + 80, yPositionOnScreen + 70), Color.Black);
+        // 鼠标
+        drawMouse(b);
+    }
+
+    public override void receiveLeftClick(int x, int y, bool playSound = true)
+    {
+        if (plusButton.containsPoint(x, y))
+        {
+            if (config.Multiplier < 50)
+            {
+                config.Multiplier++;
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (minusButton.containsPoint(x, y))
+        {
+            if (config.Multiplier > 3)
+            {
+                config.Multiplier--;
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else
+        {
+            base.receiveLeftClick(x, y, playSound);
         }
     }
 }
