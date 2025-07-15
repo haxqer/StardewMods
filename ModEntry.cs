@@ -53,7 +53,7 @@ public class ModEntry : Mod
         foreach (var entry in e.QuantityChanged)
         {
             var item = entry.Item;
-            if (item == null || entry.NewSize <= entry.OldSize)
+            if (item == null || entry.NewSize <= entry.OldSize || entry.NewSize - entry.OldSize > 1)
                 continue;
 
             if (item is SObject obj && ResourceItemIds.Contains(obj.ParentSheetIndex))
