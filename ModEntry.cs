@@ -44,7 +44,7 @@ public class ModEntry : Mod
     private bool isGivingBonus = false;
     private ModConfig Config = null!;
     private int EffectiveMultiplier =>
-        Config.Multiplier < 2 ? 2 :
+        Config.Multiplier < 3 ? 3 :
         Config.Multiplier > 50 ? 50 :
         Config.Multiplier;
 
@@ -73,7 +73,7 @@ public class ModEntry : Mod
             if (item is SObject obj && ResourceItemIds.Contains(obj.ParentSheetIndex))
             {
                 int delta = entry.NewSize - entry.OldSize;
-                int extra = delta * EffectiveMultiplier; // N获得，额外加(N*(倍数-1))
+                int extra = delta * (EffectiveMultiplier - 1); // N获得，额外加(N*(倍数-1))
                 if (extra > 0)
                 {
                     var cloned = item.getOne();
@@ -95,7 +95,7 @@ public class ModEntry : Mod
                     continue;
                 }
 
-                int extra = item.Stack * EffectiveMultiplier; // N获得，额外加(N*(倍数-1))
+                int extra = item.Stack * (EffectiveMultiplier - 1); // N获得，额外加(N*(倍数-1))
                 if (extra > 0)
                 {
                     var cloned = item.getOne();
