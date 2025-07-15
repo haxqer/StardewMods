@@ -1,0 +1,23 @@
+# Build results
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.csproj.user
+*.vs/
+
+# SMAPI mod package
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Rider/VSCode/JetBrains
+.idea/
+.vscode/
+*.sln.iml
+
+# Logs
+*.log 

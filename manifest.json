@@ -1,0 +1,10 @@
+{
+  "Name": "modtools",
+  "Author": "your_name",
+  "Version": "1.0.0",
+  "Description": "Triples all resource gains.",
+  "UniqueID": "your_name.modtools",
+  "EntryDll": "modtools.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+} 
