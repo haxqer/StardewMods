@@ -6,8 +6,14 @@ using StardewValley.Monsters;
 using StardewValley.Tools;
 using SObject = StardewValley.Object;
 using System.Collections.Generic;
+using System;
 
 namespace modtools;
+
+public class ModConfig
+{
+    public int Multiplier { get; set; } = 3;
+}
 
 public class ModEntry : Mod
 {
@@ -36,10 +42,17 @@ public class ModEntry : Mod
 
     // 防递归锁
     private bool isGivingBonus = false;
+    private ModConfig Config = null!;
+    private int EffectiveMultiplier =>
+        Config.Multiplier < 2 ? 2 :
+        Config.Multiplier > 50 ? 50 :
+        Config.Multiplier;
 
     public override void Entry(IModHelper helper)
     {
+        Config = helper.ReadConfig<ModConfig>();
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
+        this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}", LogLevel.Info);
     }
 
     private void OnInventoryChanged(object? sender, InventoryChangedEventArgs e)
@@ -60,7 +73,7 @@ public class ModEntry : Mod
             if (item is SObject obj && ResourceItemIds.Contains(obj.ParentSheetIndex))
             {
                 int delta = entry.NewSize - entry.OldSize;
-                int extra = delta * 2; // 已获得N，再加2N=3倍
+                int extra = delta * EffectiveMultiplier ; // N获得，额外加(N*(倍数-1))
                 if (extra > 0)
                 {
                     var cloned = item.getOne();
@@ -82,7 +95,7 @@ public class ModEntry : Mod
                     continue;
                 }
 
-                int extra = item.Stack * 2; // 新增N，再加2N=3倍
+                int extra = item.Stack * EffectiveMultiplier; // N获得，额外加(N*(倍数-1))
                 if (extra > 0)
                 {
                     var cloned = item.getOne();
