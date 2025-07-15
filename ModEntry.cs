@@ -73,7 +73,7 @@ public class ModEntry : Mod
             if (item is SObject obj && ResourceItemIds.Contains(obj.ParentSheetIndex))
             {
                 int delta = entry.NewSize - entry.OldSize;
-                int extra = delta * EffectiveMultiplier ; // N获得，额外加(N*(倍数-1))
+                int extra = delta * EffectiveMultiplier; // N获得，额外加(N*(倍数-1))
                 if (extra > 0)
                 {
                     var cloned = item.getOne();
