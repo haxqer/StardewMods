@@ -131,10 +131,10 @@ public class ModEntry : Mod
         api.RegisterClampedOption(
             this.ModManifest,
             "FishDifficultyMultiplier",
-            "0.1-2.0 (lower = easier)",
+            "0.05-2.0 (lower = easier)",
             () => (int)(Config.FishDifficultyMultiplier * 100),
             val => { Config.FishDifficultyMultiplier = val / 100f; Helper.WriteConfig(Config); },
-            10, 200
+            5, 200
         );
     }
 
@@ -301,35 +301,79 @@ public class MultiplierConfigMenu : IClickableMenu
     private ClickableComponent plusFishButton;
     private ClickableComponent minusFishButton;
 
+    // New: Larger window and improved layout
+    private const int WindowWidth = 1000;
+    private const int WindowHeight = 640;
+    private const int SectionSpacing = 120;
+    private const int ButtonSize = 80;
+
     public MultiplierConfigMenu(ModConfig config, Action saveAction)
-        : base(Game1.viewport.Width / 2 - 150, Game1.viewport.Height / 2 - 75, 300, 200)
+        : base(Game1.viewport.Width / 2 - WindowWidth / 2, Game1.viewport.Height / 2 - WindowHeight / 2, WindowWidth, WindowHeight)
     {
         this.config = config;
         this.saveAction = saveAction;
-        plusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 210, yPositionOnScreen + 70, 32, 32), "Plus");
-        minusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 80, yPositionOnScreen + 70, 32, 32), "Minus");
-        plusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 210, yPositionOnScreen + 120, 32, 32), "PlusFish");
-        minusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 80, yPositionOnScreen + 120, 32, 32), "MinusFish");
+        // Resource multiplier buttons
+        plusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 640, yPositionOnScreen + 120, ButtonSize, ButtonSize), "Plus");
+        minusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 360, yPositionOnScreen + 120, ButtonSize, ButtonSize), "Minus");
+        // Fish difficulty buttons
+        plusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 640, yPositionOnScreen + 120 + SectionSpacing, ButtonSize, ButtonSize), "PlusFish");
+        minusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 360, yPositionOnScreen + 120 + SectionSpacing, ButtonSize, ButtonSize), "MinusFish");
     }
 
     public override void draw(Microsoft.Xna.Framework.Graphics.SpriteBatch b)
     {
-        base.draw(b);
-        // 背景
+        // Draw background window
         IClickableMenu.drawTextureBox(b, xPositionOnScreen, yPositionOnScreen, width, height, Color.White);
-        // 标题
-        b.DrawString(Game1.smallFont, "Resource Multiplier", new Vector2(xPositionOnScreen + width / 2 - 110, yPositionOnScreen + 20), Color.Black);
-        // 当前值
-        b.DrawString(Game1.smallFont, config.Multiplier.ToString(), new Vector2(xPositionOnScreen + 140, yPositionOnScreen + 70), Color.Black);
-        // 加减按钮（直接用文本）
-        b.DrawString(Game1.smallFont, "+", new Vector2(xPositionOnScreen + 210, yPositionOnScreen + 70), Color.Black);
-        b.DrawString(Game1.smallFont, "-", new Vector2(xPositionOnScreen + 80, yPositionOnScreen + 70), Color.Black);
-        // 鱼难度倍数
-        b.DrawString(Game1.smallFont, $"Fish Difficulty x{config.FishDifficultyMultiplier:F2}", new Vector2(xPositionOnScreen + 60, yPositionOnScreen + 120), Color.Black);
-        b.DrawString(Game1.smallFont, "+", new Vector2(xPositionOnScreen + 210, yPositionOnScreen + 170), Color.Black);
-        b.DrawString(Game1.smallFont, "-", new Vector2(xPositionOnScreen + 80, yPositionOnScreen + 170), Color.Black);
-        // 鼠标
+
+        // Title
+        string title = "Mod Configuration";
+        Vector2 titleSize = Game1.dialogueFont.MeasureString(title);
+        b.DrawString(Game1.dialogueFont, title, new Vector2(xPositionOnScreen + width / 2 - titleSize.X / 2, yPositionOnScreen + 48), Color.Black);
+
+        // Section layout constants (increased spacing)
+        int row1Y = yPositionOnScreen + 160;
+        int row2Y = row1Y + SectionSpacing;
+        int labelX = xPositionOnScreen + 80;
+        int minusX = xPositionOnScreen + 500;
+        int valueX = minusX + ButtonSize + 80;
+        int plusX = valueX + 120;
+
+        // Section 1: Resource Multiplier
+        string resLabel = "Resource Multiplier";
+        b.DrawString(Game1.smallFont, resLabel, new Vector2(labelX, row1Y + 30), Color.Black);
+        minusButton.bounds = new Rectangle(minusX, row1Y, ButtonSize, ButtonSize);
+        plusButton.bounds = new Rectangle(plusX, row1Y, ButtonSize, ButtonSize);
+        drawButton(b, minusButton, "-");
+        string resValue = config.Multiplier.ToString();
+        Vector2 resValueSize = Game1.smallFont.MeasureString(resValue);
+        b.DrawString(Game1.smallFont, resValue, new Vector2(valueX + 40 - resValueSize.X / 2, row1Y + 35), Color.DarkBlue);
+        drawButton(b, plusButton, "+");
+
+        // Section 2: Fish Difficulty Multiplier
+        string fishLabel = "Fish Difficulty Multiplier";
+        b.DrawString(Game1.smallFont, fishLabel, new Vector2(labelX, row2Y + 30), Color.Black);
+        minusFishButton.bounds = new Rectangle(minusX, row2Y, ButtonSize, ButtonSize);
+        plusFishButton.bounds = new Rectangle(plusX, row2Y, ButtonSize, ButtonSize);
+        drawButton(b, minusFishButton, "-");
+        string fishValue = $"x{config.FishDifficultyMultiplier:F2}";
+        Vector2 fishValueSize = Game1.smallFont.MeasureString(fishValue);
+        b.DrawString(Game1.smallFont, fishValue, new Vector2(valueX + 40 - fishValueSize.X / 2, row2Y + 35), Color.DarkGreen);
+        drawButton(b, plusFishButton, "+");
+
+        // Instructions
+        string tip = "Press ESC to close";
+        Vector2 tipSize = Game1.tinyFont.MeasureString(tip);
+        b.DrawString(Game1.tinyFont, tip, new Vector2(xPositionOnScreen + width - tipSize.X - 32, yPositionOnScreen + height - tipSize.Y - 32), Color.Gray);
+
+        // Draw mouse
         drawMouse(b);
+    }
+
+    private void drawButton(SpriteBatch b, ClickableComponent button, string text)
+    {
+        IClickableMenu.drawTextureBox(b, button.bounds.X, button.bounds.Y, button.bounds.Width, button.bounds.Height, Color.SandyBrown);
+        Vector2 textSize = Game1.smallFont.MeasureString(text);
+        b.DrawString(Game1.smallFont, text, new Vector2(button.bounds.X + button.bounds.Width / 2 - textSize.X / 2, button.bounds.Y + button.bounds.Height / 2 - textSize.Y / 2), Color.Black);
     }
 
     public override void receiveLeftClick(int x, int y, bool playSound = true)
@@ -363,9 +407,9 @@ public class MultiplierConfigMenu : IClickableMenu
         }
         else if (minusFishButton.containsPoint(x, y))
         {
-            if (config.FishDifficultyMultiplier > 0.1f)
+            if (config.FishDifficultyMultiplier > 0.05f)
             {
-                config.FishDifficultyMultiplier = MathF.Max(0.1f, config.FishDifficultyMultiplier - 0.05f);
+                config.FishDifficultyMultiplier = MathF.Max(0.05f, config.FishDifficultyMultiplier - 0.05f);
                 saveAction();
                 Game1.playSound("drumkit6");
             }
