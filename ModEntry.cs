@@ -37,6 +37,8 @@ public class ModConfig
     public bool InfiniteTackle { get; set; } = true;
     public bool InfiniteBait { get; set; } = true;
     public KeybindList ReloadKey { get; set; } = new(SButton.F5);
+    // Time rate multiplier (1.0 = normal, <1 slower, >1 faster)
+    public float TimeRateMultiplier { get; set; } = 1.0f;
 }
 
 public class ModEntry : Mod
@@ -74,6 +76,7 @@ public class ModEntry : Mod
         Config.Multiplier;
     private readonly PerScreen<bool> BeganFishingGame = new();
     private readonly PerScreen<int> UpdateIndex = new();
+    private int timeSkipCounter = 0;
 
     public override void Entry(IModHelper helper)
     {
@@ -82,6 +85,7 @@ public class ModEntry : Mod
         helper.Events.Player.InventoryChanged += OnInventoryChanged;
         helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
         helper.Events.Input.ButtonsChanged += OnButtonsChanged;
+        helper.Events.GameLoop.TimeChanged += OnTimeChanged;
         this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}", LogLevel.Info);
 
         // 注册快捷键监听，按K键打开自定义菜单
@@ -135,6 +139,15 @@ public class ModEntry : Mod
             () => (int)(Config.FishDifficultyMultiplier * 100),
             val => { Config.FishDifficultyMultiplier = val / 100f; Helper.WriteConfig(Config); },
             5, 200
+        );
+        // Add time rate multiplier config (scaled by 100 for int slider)
+        api.RegisterClampedOption(
+            this.ModManifest,
+            "TimeRateMultiplier",
+            "0.1-2.0 (lower = slower)",
+            () => (int)(Config.TimeRateMultiplier * 100),
+            val => { Config.TimeRateMultiplier = val / 100f; Helper.WriteConfig(Config); },
+            10, 200
         );
     }
 
@@ -192,6 +205,26 @@ public class ModEntry : Mod
             // End fishing game
             BeganFishingGame.Value = false;
             UpdateIndex.Value = 0;
+        }
+    }
+    private void OnTimeChanged(object? sender, TimeChangedEventArgs e)
+    {
+        if (Config.TimeRateMultiplier >= 0.99f)
+        {
+            timeSkipCounter = 0;
+            return; // normal speed
+        }
+        // Only allow time to advance every Nth event
+        int skip = (int)Math.Round(1.0 / Config.TimeRateMultiplier);
+        timeSkipCounter++;
+        if (timeSkipCounter < skip)
+        {
+            // Revert time
+            Game1.timeOfDay = e.OldTime;
+        }
+        else
+        {
+            timeSkipCounter = 0;
         }
     }
     private void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)
@@ -300,6 +333,8 @@ public class MultiplierConfigMenu : IClickableMenu
     private ClickableComponent minusButton;
     private ClickableComponent plusFishButton;
     private ClickableComponent minusFishButton;
+    private ClickableComponent plusTimeButton;
+    private ClickableComponent minusTimeButton;
 
     // New: Larger window and improved layout
     private const int WindowWidth = 1000;
@@ -318,6 +353,9 @@ public class MultiplierConfigMenu : IClickableMenu
         // Fish difficulty buttons
         plusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 640, yPositionOnScreen + 120 + SectionSpacing, ButtonSize, ButtonSize), "PlusFish");
         minusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 360, yPositionOnScreen + 120 + SectionSpacing, ButtonSize, ButtonSize), "MinusFish");
+        // Time rate buttons
+        plusTimeButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 640, yPositionOnScreen + 120 + SectionSpacing * 2, ButtonSize, ButtonSize), "PlusTime");
+        minusTimeButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 360, yPositionOnScreen + 120 + SectionSpacing * 2, ButtonSize, ButtonSize), "MinusTime");
     }
 
     public override void draw(Microsoft.Xna.Framework.Graphics.SpriteBatch b)
@@ -333,6 +371,7 @@ public class MultiplierConfigMenu : IClickableMenu
         // Section layout constants (increased spacing)
         int row1Y = yPositionOnScreen + 160;
         int row2Y = row1Y + SectionSpacing;
+        int row3Y = row2Y + SectionSpacing;
         int labelX = xPositionOnScreen + 80;
         int minusX = xPositionOnScreen + 500;
         int valueX = minusX + ButtonSize + 80;
@@ -359,6 +398,17 @@ public class MultiplierConfigMenu : IClickableMenu
         Vector2 fishValueSize = Game1.smallFont.MeasureString(fishValue);
         b.DrawString(Game1.smallFont, fishValue, new Vector2(valueX + 40 - fishValueSize.X / 2, row2Y + 35), Color.DarkGreen);
         drawButton(b, plusFishButton, "+");
+
+        // Section 3: Time Rate Multiplier
+        string timeLabel = "Time Rate Multiplier";
+        b.DrawString(Game1.smallFont, timeLabel, new Vector2(labelX, row3Y + 30), Color.Black);
+        minusTimeButton.bounds = new Rectangle(minusX, row3Y, ButtonSize, ButtonSize);
+        plusTimeButton.bounds = new Rectangle(plusX, row3Y, ButtonSize, ButtonSize);
+        drawButton(b, minusTimeButton, "-");
+        string timeValue = $"x{config.TimeRateMultiplier:F2}";
+        Vector2 timeValueSize = Game1.smallFont.MeasureString(timeValue);
+        b.DrawString(Game1.smallFont, timeValue, new Vector2(valueX + 40 - timeValueSize.X / 2, row3Y + 35), Color.Purple);
+        drawButton(b, plusTimeButton, "+");
 
         // Instructions
         string tip = "Press ESC to close";
@@ -410,6 +460,24 @@ public class MultiplierConfigMenu : IClickableMenu
             if (config.FishDifficultyMultiplier > 0.05f)
             {
                 config.FishDifficultyMultiplier = MathF.Max(0.05f, config.FishDifficultyMultiplier - 0.05f);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (plusTimeButton.containsPoint(x, y))
+        {
+            if (config.TimeRateMultiplier < 2.0f)
+            {
+                config.TimeRateMultiplier = MathF.Min(2.0f, config.TimeRateMultiplier + 0.05f);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (minusTimeButton.containsPoint(x, y))
+        {
+            if (config.TimeRateMultiplier > 0.1f)
+            {
+                config.TimeRateMultiplier = MathF.Max(0.1f, config.TimeRateMultiplier - 0.05f);
                 saveAction();
                 Game1.playSound("drumkit6");
             }
