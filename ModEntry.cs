@@ -56,27 +56,83 @@ public class ModConfig
 
 public class ModEntry : Mod
 {
-    // 资源类物品ID白名单
+    // 资源类物品ID白名单 / Resource item ID whitelist
     private static readonly HashSet<int> ResourceItemIds = new()
     {
-        388, // 木头
-        390, // 石头
-        382, // 煤炭
-        771, // 纤维
-        330, // 粘土
-        378, // 铜矿
-        380, // 铁矿
-        384, // 金矿
-        386, // 铱矿
-        709, // 硬木
-        92,  // 树液
-        766, // 史莱姆
-        80,  // 石英
-        338, // 精炼石英
-        767, // 蝙蝠翅膀
-        684, // 虫肉
-        768, // 太阳精华
-        769  // 虚空精华
+        388, // 木头 / Wood
+        390, // 石头 / Stone
+        382, // 煤炭 / Coal
+        771, // 纤维 / Fiber
+        330, // 粘土 / Clay
+        378, // 铜矿 / Copper Ore
+        380, // 铁矿 / Iron Ore
+        384, // 金矿 / Gold Ore
+        386, // 铱矿 / Iridium Ore
+        709, // 硬木 / Hardwood
+        92,  // 树液 / Sap
+        766, // 史莱姆 / Slime
+        80,  // 石英 / Quartz
+        338, // 精炼石英 / Refined Quartz
+        767, // 蝙蝠翅膀 / Bat Wing
+        684, // 虫肉 / Bug Meat
+        768, // 太阳精华 / Solar Essence
+        769, // 虚空精华 / Void Essence
+        
+        // 宝石 / Gems
+        60,  // 绿宝石 / Emerald
+        62,  // 海蓝宝石 / Aquamarine
+        64,  // 红宝石 / Ruby
+        66,  // 紫水晶 / Amethyst
+        68,  // 黄玉 / Topaz
+        70,  // 翡翠 / Jade
+        72,  // 钻石 / Diamond
+        74,  // 五彩碎片 / Prismatic Shard
+        82,  // 火石英 / Fire Quartz
+        84,  // 冰冻泪滴 / Frozen Tear
+        86,  // 地晶 / Earth Crystal
+        
+        // 矿物 / Minerals
+        538, // 铝矿 / Alamite
+        539, // 铋矿 / Bixite
+        540, // 重晶石 / Baryte
+        541, // 蓝晶石 / Aerinite
+        542, // 方解石 / Calcite
+        543, // 白云石 / Dolomite
+        544, // 钙长石 / Esperite
+        545, // 氟磷灰石 / Fluorapatite
+        546, // 宝石矿 / Geminite
+        547, // 日光榴石 / Helvite
+        548, // 蓝方石 / Jamborite
+        549, // 绿帘石 / Jagoite
+        550, // 蓝晶石 / Kyanite
+        551, // 月长石 / Lunarite
+        552, // 孔雀石 / Malachite
+        553, // 海王石 / Neptunite
+        554, // 柠檬石 / Lemon Stone
+        555, // 猫眼石 / Nekoite
+        556, // 雌黄 / Orpiment
+        557, // 石化史莱姆 / Petrified Slime
+        558, // 雷蛋 / Thunder Egg
+        559, // 黄铁矿 / Pyrite
+        560, // 海洋石 / Ocean Stone
+        561, // 幽灵水晶 / Ghost Crystal
+        562, // 虎眼石 / Tigerseye
+        563, // 碧玉 / Jasper
+        564, // 蛋白石 / Opal
+        565, // 火蛋白石 / Fire Opal
+        566, // 天青石 / Celestine
+        567, // 大理石 / Marble
+        568, // 砂岩 / Sandstone
+        569, // 花岗岩 / Granite
+        570, // 玄武岩 / Basalt
+        571, // 石灰岩 / Limestone
+        572, // 皂石 / Soapstone
+        573, // 赤铁矿 / Hematite
+        574, // 泥岩 / Mudstone
+        575, // 黑曜石 / Obsidian
+        576, // 板岩 / Slate
+        577, // 仙石 / Fairy Stone
+        578  // 星之碎片 / Star Shards
     };
 
     // 防递归锁
