@@ -20,25 +20,38 @@ public interface IGenericModConfigMenuApi
 {
     void RegisterModConfig(IManifest mod, Action revertToDefault, Action saveToFile);
     void RegisterClampedOption(IManifest mod, string optionName, string optionDesc, Func<int> optionGet, Action<int> optionSet, int min, int max);
+    void RegisterSimpleOption(IManifest mod, string optionName, string optionDesc, Func<bool> optionGet, Action<bool> optionSet);
 }
 
 public class ModConfig
 {
     public int Multiplier { get; set; } = 3;
-    // Fishing options
+    
+    // Fishing difficulty options (affects minigame, not rewards)
+    public bool EasierFishing { get; set; } = false;
+    public float FishDifficultyMultiplier { get; set; } = 0.5f; // 0.1-2.0, lower = easier
+    public float FishDifficultyAdditive { get; set; } = -20.0f; // -50 to +50
+    public bool LargerFishingBar { get; set; } = true;
+    public int FishingBarHeight { get; set; } = 400; // 60-568
+    public bool SlowerFishMovement { get; set; } = false;
+    public float FishMovementSpeedMultiplier { get; set; } = 0.7f; // 0.1-1.0, lower = slower
+    
+    // Fishing convenience options
     public bool AlwaysPerfect { get; set; } = false;
     public bool AlwaysFindTreasure { get; set; } = false;
     public bool InstantCatchFish { get; set; } = false;
     public bool InstantCatchTreasure { get; set; } = false;
-    public bool EasierFishing { get; set; } = false;
-    public float FishDifficultyMultiplier { get; set; } = 1.0f;
-    public float FishDifficultyAdditive { get; set; } = 0.0f;
-    public float LossAdditive { get; set; } = 2 / 1000f;
     public bool InfiniteTackle { get; set; } = true;
     public bool InfiniteBait { get; set; } = true;
-    public KeybindList ReloadKey { get; set; } = new(SButton.F5);
+    public bool AutoHook { get; set; } = false;
+    public float LossAdditive { get; set; } = 2 / 1000f;
+    
     // Time rate multiplier (1.0 = normal, <1 slower, >1 faster)
     public float TimeRateMultiplier { get; set; } = 1.0f;
+    
+    // Keybinds
+    public KeybindList ReloadKey { get; set; } = new(SButton.F5);
+    public KeybindList ConfigMenuKey { get; set; } = new(SButton.K);
 }
 
 public class ModEntry : Mod
@@ -86,6 +99,8 @@ public class ModEntry : Mod
         helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
         helper.Events.Input.ButtonsChanged += OnButtonsChanged;
         helper.Events.GameLoop.TimeChanged += OnTimeChanged;
+        helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+        helper.Events.Display.MenuChanged += OnMenuChanged;
         this.Monitor.Log($"Loaded Multiplier: {Config.Multiplier}", LogLevel.Info);
 
         // 注册快捷键监听，按K键打开自定义菜单
@@ -96,7 +111,7 @@ public class ModEntry : Mod
     {
         if (!Context.IsWorldReady || !Context.IsPlayerFree)
             return;
-        if (e.Button == SButton.K)
+        if (Config.ConfigMenuKey.JustPressed())
         {
             Game1.activeClickableMenu = new MultiplierConfigMenu(Config, SaveConfig);
         }
@@ -123,28 +138,140 @@ public class ModEntry : Mod
             () => Config = new ModConfig(),
             () => Helper.WriteConfig(Config)
         );
+        
+        // Resource multiplier
         api.RegisterClampedOption(
             this.ModManifest,
-            "Multiplier",
-            "3-50",
+            "Resource Multiplier",
+            "Multiplier for resource gains (3-50)",
             () => Config.Multiplier,
             val => { Config.Multiplier = val; Helper.WriteConfig(Config); },
             3, 50
         );
-        // Add fish difficulty multiplier config (scaled by 100 for int slider)
+        
+        // Fishing difficulty options
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Easier Fishing",
+            "Enable easier fishing mode (sets motion type to 2)",
+            () => Config.EasierFishing,
+            val => { Config.EasierFishing = val; Helper.WriteConfig(Config); }
+        );
+        
         api.RegisterClampedOption(
             this.ModManifest,
-            "FishDifficultyMultiplier",
-            "0.05-2.0 (lower = easier)",
+            "Fish Difficulty Multiplier",
+            "Multiplier for fish difficulty (0.1-2.0, lower = easier)",
             () => (int)(Config.FishDifficultyMultiplier * 100),
             val => { Config.FishDifficultyMultiplier = val / 100f; Helper.WriteConfig(Config); },
-            5, 200
+            10, 200
         );
-        // Add time rate multiplier config (scaled by 100 for int slider)
+        
         api.RegisterClampedOption(
             this.ModManifest,
-            "TimeRateMultiplier",
-            "0.1-2.0 (lower = slower)",
+            "Fish Difficulty Additive",
+            "Additive modifier for fish difficulty (-50 to +50)",
+            () => (int)(Config.FishDifficultyAdditive + 50),
+            val => { Config.FishDifficultyAdditive = val - 50; Helper.WriteConfig(Config); },
+            0, 100
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Larger Fishing Bar",
+            "Make the fishing bar larger for easier catching",
+            () => Config.LargerFishingBar,
+            val => { Config.LargerFishingBar = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterClampedOption(
+            this.ModManifest,
+            "Fishing Bar Height",
+            "Height of the fishing bar (60-568)",
+            () => Config.FishingBarHeight,
+            val => { Config.FishingBarHeight = val; Helper.WriteConfig(Config); },
+            60, 568
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Slower Fish Movement",
+            "Make fish move slower in the minigame",
+            () => Config.SlowerFishMovement,
+            val => { Config.SlowerFishMovement = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterClampedOption(
+            this.ModManifest,
+            "Fish Movement Speed",
+            "Speed multiplier for fish movement (0.1-1.0, lower = slower)",
+            () => (int)(Config.FishMovementSpeedMultiplier * 100),
+            val => { Config.FishMovementSpeedMultiplier = val / 100f; Helper.WriteConfig(Config); },
+            10, 100
+        );
+        
+        // Fishing convenience options
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Always Perfect",
+            "Always get perfect catches",
+            () => Config.AlwaysPerfect,
+            val => { Config.AlwaysPerfect = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Always Find Treasure",
+            "Always find treasure while fishing",
+            () => Config.AlwaysFindTreasure,
+            val => { Config.AlwaysFindTreasure = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Instant Catch Fish",
+            "Instantly catch fish (skip minigame)",
+            () => Config.InstantCatchFish,
+            val => { Config.InstantCatchFish = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Instant Catch Treasure",
+            "Instantly catch treasure",
+            () => Config.InstantCatchTreasure,
+            val => { Config.InstantCatchTreasure = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Infinite Bait",
+            "Bait never gets consumed",
+            () => Config.InfiniteBait,
+            val => { Config.InfiniteBait = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Infinite Tackle",
+            "Tackle never gets consumed",
+            () => Config.InfiniteTackle,
+            val => { Config.InfiniteTackle = val; Helper.WriteConfig(Config); }
+        );
+        
+        api.RegisterSimpleOption(
+            this.ModManifest,
+            "Auto Hook",
+            "Automatically hook fish when they bite",
+            () => Config.AutoHook,
+            val => { Config.AutoHook = val; Helper.WriteConfig(Config); }
+        );
+        
+        // Time rate multiplier
+        api.RegisterClampedOption(
+            this.ModManifest,
+            "Time Rate Multiplier",
+            "Speed of time passage (0.1-2.0, lower = slower)",
             () => (int)(Config.TimeRateMultiplier * 100),
             val => { Config.TimeRateMultiplier = val / 100f; Helper.WriteConfig(Config); },
             10, 200
@@ -155,6 +282,7 @@ public class ModEntry : Mod
     {
         if (!Context.IsWorldReady)
             return;
+        
         // Infinite bait/tackle
         if (e.IsOneSecond && (Config.InfiniteBait || Config.InfiniteTackle))
         {
@@ -166,37 +294,53 @@ public class ModEntry : Mod
                     rod.attachments[1].uses.Value = 0;
             }
         }
+        
         // Fishing minigame logic
         if (Game1.activeClickableMenu is BobberBar bobber)
         {
-            // Begin fishing game
+            // Begin fishing game - only apply modifications once
             if (!BeganFishingGame.Value && UpdateIndex.Value > 15)
             {
-                // Do these things once per fishing minigame, 1/4 second after it updates
-                bobber.difficulty *= Config.FishDifficultyMultiplier;
-                bobber.difficulty += Config.FishDifficultyAdditive;
+                // Store original difficulty for reward calculation
+                var originalDifficulty = bobber.difficulty;
+                
+                // Apply difficulty modifications (these affect minigame only)
+                if (Config.EasierFishing)
+                {
+                    bobber.motionType = 2; // Easier motion pattern
+                }
+                
+                // Apply difficulty multiplier and additive (clamped to reasonable values)
+                float newDifficulty = originalDifficulty * Config.FishDifficultyMultiplier + Config.FishDifficultyAdditive;
+                bobber.difficulty = Math.Max(1, Math.Min(100, (int)newDifficulty));
+                
+                // Apply convenience options
                 if (Config.AlwaysFindTreasure)
                     bobber.treasure = true;
+                    
                 if (Config.InstantCatchFish)
                 {
                     if (bobber.treasure)
                         bobber.treasureCaught = true;
                     bobber.distanceFromCatching += 100;
                 }
+                
                 if (Config.InstantCatchTreasure)
+                {
                     if (bobber.treasure || Config.AlwaysFindTreasure)
                         bobber.treasureCaught = true;
-                if (Config.EasierFishing)
-                {
-                    bobber.difficulty = Math.Max(15, Math.Max(bobber.difficulty, 60));
-                    bobber.motionType = 2;
                 }
+                
                 BeganFishingGame.Value = true;
             }
+            
             if (UpdateIndex.Value < 20)
                 UpdateIndex.Value++;
+                
+            // Continuous effects during minigame
             if (Config.AlwaysPerfect)
                 bobber.perfect = true;
+                
             if (!bobber.bobberInBar)
                 bobber.distanceFromCatching += Config.LossAdditive;
         }
@@ -295,30 +439,62 @@ public class ModEntry : Mod
         {
             try
             {
-                // 1. 降低难度（可配置）
-                var fishField = this.Helper.Reflection.GetField<object>(bobberBar, "fish");
-                var fish = fishField.GetValue();
-                var fishType = fish.GetType();
-                var difficultyProp = fishType.GetProperty("difficulty");
-                if (difficultyProp != null)
+                // Apply fishing bar height modification
+                if (Config.LargerFishingBar)
                 {
-                    object? value = difficultyProp.GetValue(fish);
-                    if (value is int originalDifficulty)
+                    var barHeightField = this.Helper.Reflection.GetField<int>(bobberBar, "bobberBarHeight");
+                    if (barHeightField != null)
                     {
-                        int newDifficulty = Math.Max(1, (int)(originalDifficulty * Config.FishDifficultyMultiplier));
-                        difficultyProp.SetValue(fish, newDifficulty);
+                        barHeightField.SetValue(Config.FishingBarHeight);
                     }
                 }
-                // 2. 增大绿色条
-                var barHeightField = this.Helper.Reflection.GetField<int>(bobberBar, "bobberBarHeight");
-                barHeightField.SetValue(400); // 最大568，默认60-300
-                // 3. 可选：自动完成小游戏
-                // var distanceFromCatchingField = this.Helper.Reflection.GetField<float>(bobberBar, "distanceFromCatching");
-                // distanceFromCatchingField.SetValue(1f); // 直接满进度
+                
+                // Apply fish movement speed modification
+                if (Config.SlowerFishMovement)
+                {
+                    var fishField = this.Helper.Reflection.GetField<object>(bobberBar, "fish");
+                    if (fishField != null)
+                    {
+                        var fish = fishField.GetValue();
+                        if (fish != null)
+                        {
+                            var fishType = fish.GetType();
+                            
+                            // Try to modify fish movement speed
+                            var speedField = fishType.GetField("speed");
+                            if (speedField != null)
+                            {
+                                var currentSpeed = speedField.GetValue(fish);
+                                if (currentSpeed is float speed)
+                                {
+                                    speedField.SetValue(fish, speed * Config.FishMovementSpeedMultiplier);
+                                }
+                            }
+                            
+                            // Try to modify fish movement pattern speed
+                            var patternSpeedField = fishType.GetField("patternSpeed");
+                            if (patternSpeedField != null)
+                            {
+                                var currentPatternSpeed = patternSpeedField.GetValue(fish);
+                                if (currentPatternSpeed is float patternSpeed)
+                                {
+                                    patternSpeedField.SetValue(fish, patternSpeed * Config.FishMovementSpeedMultiplier);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Auto-hook functionality
+                if (Config.AutoHook)
+                {
+                    // This would need to be implemented in the UpdateTicked method
+                    // as we need to continuously check for fish biting
+                }
             }
             catch (Exception ex)
             {
-                this.Monitor.Log($"Error simplifying fishing: {ex}", LogLevel.Error);
+                this.Monitor.Log($"Error modifying fishing minigame: {ex}", LogLevel.Error);
             }
         }
     }
@@ -329,33 +505,77 @@ public class MultiplierConfigMenu : IClickableMenu
 {
     private ModConfig config;
     private Action saveAction;
+    
+    // Resource multiplier buttons
     private ClickableComponent plusButton;
     private ClickableComponent minusButton;
+    
+    // Fish difficulty buttons
     private ClickableComponent plusFishButton;
     private ClickableComponent minusFishButton;
+    private ClickableComponent plusFishAddButton;
+    private ClickableComponent minusFishAddButton;
+    private ClickableComponent plusBarHeightButton;
+    private ClickableComponent minusBarHeightButton;
+    private ClickableComponent plusFishSpeedButton;
+    private ClickableComponent minusFishSpeedButton;
+    
+    // Time rate buttons
     private ClickableComponent plusTimeButton;
     private ClickableComponent minusTimeButton;
+    
+    // Toggle buttons
+    private ClickableComponent easierFishingButton;
+    private ClickableComponent largerBarButton;
+    private ClickableComponent slowerFishButton;
+    private ClickableComponent alwaysPerfectButton;
+    private ClickableComponent alwaysTreasureButton;
+    private ClickableComponent instantCatchButton;
+    private ClickableComponent instantTreasureButton;
+    private ClickableComponent infiniteBaitButton;
+    private ClickableComponent infiniteTackleButton;
+    private ClickableComponent autoHookButton;
 
-    // New: Larger window and improved layout
-    private const int WindowWidth = 1000;
-    private const int WindowHeight = 640;
-    private const int SectionSpacing = 120;
-    private const int ButtonSize = 80;
+    // Layout constants
+    private const int WindowWidth = 1200;
+    private const int WindowHeight = 800;
+    private const int SectionSpacing = 100;
+    private const int ButtonSize = 60;
+    private const int ToggleButtonWidth = 200;
+    private const int ToggleButtonHeight = 40;
 
     public MultiplierConfigMenu(ModConfig config, Action saveAction)
         : base(Game1.viewport.Width / 2 - WindowWidth / 2, Game1.viewport.Height / 2 - WindowHeight / 2, WindowWidth, WindowHeight)
     {
         this.config = config;
         this.saveAction = saveAction;
-        // Resource multiplier buttons
-        plusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 640, yPositionOnScreen + 120, ButtonSize, ButtonSize), "Plus");
-        minusButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 360, yPositionOnScreen + 120, ButtonSize, ButtonSize), "Minus");
-        // Fish difficulty buttons
-        plusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 640, yPositionOnScreen + 120 + SectionSpacing, ButtonSize, ButtonSize), "PlusFish");
-        minusFishButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 360, yPositionOnScreen + 120 + SectionSpacing, ButtonSize, ButtonSize), "MinusFish");
-        // Time rate buttons
-        plusTimeButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 640, yPositionOnScreen + 120 + SectionSpacing * 2, ButtonSize, ButtonSize), "PlusTime");
-        minusTimeButton = new ClickableComponent(new Rectangle(xPositionOnScreen + 360, yPositionOnScreen + 120 + SectionSpacing * 2, ButtonSize, ButtonSize), "MinusTime");
+        
+        // Initialize all buttons with placeholder positions
+        // They will be positioned properly in the draw method
+        plusButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "Plus");
+        minusButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "Minus");
+        plusFishButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "PlusFish");
+        minusFishButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "MinusFish");
+        plusFishAddButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "PlusFishAdd");
+        minusFishAddButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "MinusFishAdd");
+        plusBarHeightButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "PlusBarHeight");
+        minusBarHeightButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "MinusBarHeight");
+        plusFishSpeedButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "PlusFishSpeed");
+        minusFishSpeedButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "MinusFishSpeed");
+        plusTimeButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "PlusTime");
+        minusTimeButton = new ClickableComponent(new Rectangle(0, 0, ButtonSize, ButtonSize), "MinusTime");
+        
+        // Toggle buttons
+        easierFishingButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "EasierFishing");
+        largerBarButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "LargerBar");
+        slowerFishButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "SlowerFish");
+        alwaysPerfectButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "AlwaysPerfect");
+        alwaysTreasureButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "AlwaysTreasure");
+        instantCatchButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "InstantCatch");
+        instantTreasureButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "InstantTreasure");
+        infiniteBaitButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "InfiniteBait");
+        infiniteTackleButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "InfiniteTackle");
+        autoHookButton = new ClickableComponent(new Rectangle(0, 0, ToggleButtonWidth, ToggleButtonHeight), "AutoHook");
     }
 
     public override void draw(Microsoft.Xna.Framework.Graphics.SpriteBatch b)
@@ -366,49 +586,140 @@ public class MultiplierConfigMenu : IClickableMenu
         // Title
         string title = "Mod Configuration";
         Vector2 titleSize = Game1.dialogueFont.MeasureString(title);
-        b.DrawString(Game1.dialogueFont, title, new Vector2(xPositionOnScreen + width / 2 - titleSize.X / 2, yPositionOnScreen + 48), Color.Black);
+        b.DrawString(Game1.dialogueFont, title, new Vector2(xPositionOnScreen + width / 2 - titleSize.X / 2, yPositionOnScreen + 20), Color.Black);
 
-        // Section layout constants (increased spacing)
-        int row1Y = yPositionOnScreen + 160;
-        int row2Y = row1Y + SectionSpacing;
-        int row3Y = row2Y + SectionSpacing;
-        int labelX = xPositionOnScreen + 80;
-        int minusX = xPositionOnScreen + 500;
-        int valueX = minusX + ButtonSize + 80;
-        int plusX = valueX + 120;
+        // Layout constants
+        int startY = yPositionOnScreen + 80;
+        int leftColumnX = xPositionOnScreen + 50;
+        int rightColumnX = xPositionOnScreen + width / 2 + 50;
+        int labelX = leftColumnX;
+        int minusX = labelX + 250;
+        int valueX = minusX + ButtonSize + 20;
+        int plusX = valueX + 80;
+        int toggleX = rightColumnX;
+        int toggleY = startY;
 
         // Section 1: Resource Multiplier
-        string resLabel = "Resource Multiplier";
-        b.DrawString(Game1.smallFont, resLabel, new Vector2(labelX, row1Y + 30), Color.Black);
-        minusButton.bounds = new Rectangle(minusX, row1Y, ButtonSize, ButtonSize);
-        plusButton.bounds = new Rectangle(plusX, row1Y, ButtonSize, ButtonSize);
+        string resLabel = "Resource Multiplier:";
+        b.DrawString(Game1.smallFont, resLabel, new Vector2(labelX, startY + 15), Color.Black);
+        minusButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
+        plusButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
         drawButton(b, minusButton, "-");
         string resValue = config.Multiplier.ToString();
         Vector2 resValueSize = Game1.smallFont.MeasureString(resValue);
-        b.DrawString(Game1.smallFont, resValue, new Vector2(valueX + 40 - resValueSize.X / 2, row1Y + 35), Color.DarkBlue);
+        b.DrawString(Game1.smallFont, resValue, new Vector2(valueX + 30 - resValueSize.X / 2, startY + 15), Color.DarkBlue);
         drawButton(b, plusButton, "+");
 
         // Section 2: Fish Difficulty Multiplier
-        string fishLabel = "Fish Difficulty Multiplier";
-        b.DrawString(Game1.smallFont, fishLabel, new Vector2(labelX, row2Y + 30), Color.Black);
-        minusFishButton.bounds = new Rectangle(minusX, row2Y, ButtonSize, ButtonSize);
-        plusFishButton.bounds = new Rectangle(plusX, row2Y, ButtonSize, ButtonSize);
+        startY += 60;
+        string fishLabel = "Fish Difficulty Multiplier:";
+        b.DrawString(Game1.smallFont, fishLabel, new Vector2(labelX, startY + 15), Color.Black);
+        minusFishButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
+        plusFishButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
         drawButton(b, minusFishButton, "-");
         string fishValue = $"x{config.FishDifficultyMultiplier:F2}";
         Vector2 fishValueSize = Game1.smallFont.MeasureString(fishValue);
-        b.DrawString(Game1.smallFont, fishValue, new Vector2(valueX + 40 - fishValueSize.X / 2, row2Y + 35), Color.DarkGreen);
+        b.DrawString(Game1.smallFont, fishValue, new Vector2(valueX + 30 - fishValueSize.X / 2, startY + 15), Color.DarkGreen);
         drawButton(b, plusFishButton, "+");
 
-        // Section 3: Time Rate Multiplier
-        string timeLabel = "Time Rate Multiplier";
-        b.DrawString(Game1.smallFont, timeLabel, new Vector2(labelX, row3Y + 30), Color.Black);
-        minusTimeButton.bounds = new Rectangle(minusX, row3Y, ButtonSize, ButtonSize);
-        plusTimeButton.bounds = new Rectangle(plusX, row3Y, ButtonSize, ButtonSize);
+        // Section 3: Fish Difficulty Additive
+        startY += 60;
+        string fishAddLabel = "Fish Difficulty Additive:";
+        b.DrawString(Game1.smallFont, fishAddLabel, new Vector2(labelX, startY + 15), Color.Black);
+        minusFishAddButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
+        plusFishAddButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
+        drawButton(b, minusFishAddButton, "-");
+        string fishAddValue = $"{config.FishDifficultyAdditive:F1}";
+        Vector2 fishAddValueSize = Game1.smallFont.MeasureString(fishAddValue);
+        b.DrawString(Game1.smallFont, fishAddValue, new Vector2(valueX + 30 - fishAddValueSize.X / 2, startY + 15), Color.DarkGreen);
+        drawButton(b, plusFishAddButton, "+");
+
+        // Section 4: Fishing Bar Height
+        startY += 60;
+        string barLabel = "Fishing Bar Height:";
+        b.DrawString(Game1.smallFont, barLabel, new Vector2(labelX, startY + 15), Color.Black);
+        minusBarHeightButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
+        plusBarHeightButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
+        drawButton(b, minusBarHeightButton, "-");
+        string barValue = config.FishingBarHeight.ToString();
+        Vector2 barValueSize = Game1.smallFont.MeasureString(barValue);
+        b.DrawString(Game1.smallFont, barValue, new Vector2(valueX + 30 - barValueSize.X / 2, startY + 15), Color.DarkGreen);
+        drawButton(b, plusBarHeightButton, "+");
+
+        // Section 5: Fish Movement Speed
+        startY += 60;
+        string speedLabel = "Fish Movement Speed:";
+        b.DrawString(Game1.smallFont, speedLabel, new Vector2(labelX, startY + 15), Color.Black);
+        minusFishSpeedButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
+        plusFishSpeedButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
+        drawButton(b, minusFishSpeedButton, "-");
+        string speedValue = $"x{config.FishMovementSpeedMultiplier:F2}";
+        Vector2 speedValueSize = Game1.smallFont.MeasureString(speedValue);
+        b.DrawString(Game1.smallFont, speedValue, new Vector2(valueX + 30 - speedValueSize.X / 2, startY + 15), Color.DarkGreen);
+        drawButton(b, plusFishSpeedButton, "+");
+
+        // Section 6: Time Rate Multiplier
+        startY += 60;
+        string timeLabel = "Time Rate Multiplier:";
+        b.DrawString(Game1.smallFont, timeLabel, new Vector2(labelX, startY + 15), Color.Black);
+        minusTimeButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
+        plusTimeButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
         drawButton(b, minusTimeButton, "-");
         string timeValue = $"x{config.TimeRateMultiplier:F2}";
         Vector2 timeValueSize = Game1.smallFont.MeasureString(timeValue);
-        b.DrawString(Game1.smallFont, timeValue, new Vector2(valueX + 40 - timeValueSize.X / 2, row3Y + 35), Color.Purple);
+        b.DrawString(Game1.smallFont, timeValue, new Vector2(valueX + 30 - timeValueSize.X / 2, startY + 15), Color.Purple);
         drawButton(b, plusTimeButton, "+");
+
+        // Right column: Toggle options
+        // Section 1: Difficulty toggles
+        string difficultyTitle = "Difficulty Options:";
+        b.DrawString(Game1.smallFont, difficultyTitle, new Vector2(toggleX, toggleY), Color.Black);
+        toggleY += 30;
+
+        easierFishingButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, easierFishingButton, "Easier Fishing", config.EasierFishing);
+        toggleY += 50;
+
+        largerBarButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, largerBarButton, "Larger Bar", config.LargerFishingBar);
+        toggleY += 50;
+
+        slowerFishButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, slowerFishButton, "Slower Fish", config.SlowerFishMovement);
+        toggleY += 50;
+
+        // Section 2: Convenience toggles
+        toggleY += 20;
+        string convenienceTitle = "Convenience Options:";
+        b.DrawString(Game1.smallFont, convenienceTitle, new Vector2(toggleX, toggleY), Color.Black);
+        toggleY += 30;
+
+        alwaysPerfectButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, alwaysPerfectButton, "Always Perfect", config.AlwaysPerfect);
+        toggleY += 50;
+
+        alwaysTreasureButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, alwaysTreasureButton, "Always Treasure", config.AlwaysFindTreasure);
+        toggleY += 50;
+
+        instantCatchButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, instantCatchButton, "Instant Catch", config.InstantCatchFish);
+        toggleY += 50;
+
+        instantTreasureButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, instantTreasureButton, "Instant Treasure", config.InstantCatchTreasure);
+        toggleY += 50;
+
+        infiniteBaitButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, infiniteBaitButton, "Infinite Bait", config.InfiniteBait);
+        toggleY += 50;
+
+        infiniteTackleButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, infiniteTackleButton, "Infinite Tackle", config.InfiniteTackle);
+        toggleY += 50;
+
+        autoHookButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
+        drawToggleButton(b, autoHookButton, "Auto Hook", config.AutoHook);
 
         // Instructions
         string tip = "Press ESC to close";
@@ -426,8 +737,17 @@ public class MultiplierConfigMenu : IClickableMenu
         b.DrawString(Game1.smallFont, text, new Vector2(button.bounds.X + button.bounds.Width / 2 - textSize.X / 2, button.bounds.Y + button.bounds.Height / 2 - textSize.Y / 2), Color.Black);
     }
 
+    private void drawToggleButton(SpriteBatch b, ClickableComponent button, string text, bool isEnabled)
+    {
+        Color buttonColor = isEnabled ? Color.LightGreen : Color.LightGray;
+        IClickableMenu.drawTextureBox(b, button.bounds.X, button.bounds.Y, button.bounds.Width, button.bounds.Height, buttonColor);
+        Vector2 textSize = Game1.smallFont.MeasureString(text);
+        b.DrawString(Game1.smallFont, text, new Vector2(button.bounds.X + button.bounds.Width / 2 - textSize.X / 2, button.bounds.Y + button.bounds.Height / 2 - textSize.Y / 2), Color.Black);
+    }
+
     public override void receiveLeftClick(int x, int y, bool playSound = true)
     {
+        // Resource multiplier
         if (plusButton.containsPoint(x, y))
         {
             if (config.Multiplier < 50)
@@ -446,6 +766,7 @@ public class MultiplierConfigMenu : IClickableMenu
                 Game1.playSound("drumkit6");
             }
         }
+        // Fish difficulty multiplier
         else if (plusFishButton.containsPoint(x, y))
         {
             if (config.FishDifficultyMultiplier < 2.0f)
@@ -457,13 +778,71 @@ public class MultiplierConfigMenu : IClickableMenu
         }
         else if (minusFishButton.containsPoint(x, y))
         {
-            if (config.FishDifficultyMultiplier > 0.05f)
+            if (config.FishDifficultyMultiplier > 0.1f)
             {
-                config.FishDifficultyMultiplier = MathF.Max(0.05f, config.FishDifficultyMultiplier - 0.05f);
+                config.FishDifficultyMultiplier = MathF.Max(0.1f, config.FishDifficultyMultiplier - 0.05f);
                 saveAction();
                 Game1.playSound("drumkit6");
             }
         }
+        // Fish difficulty additive
+        else if (plusFishAddButton.containsPoint(x, y))
+        {
+            if (config.FishDifficultyAdditive < 50.0f)
+            {
+                config.FishDifficultyAdditive = MathF.Min(50.0f, config.FishDifficultyAdditive + 5.0f);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (minusFishAddButton.containsPoint(x, y))
+        {
+            if (config.FishDifficultyAdditive > -50.0f)
+            {
+                config.FishDifficultyAdditive = MathF.Max(-50.0f, config.FishDifficultyAdditive - 5.0f);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        // Fishing bar height
+        else if (plusBarHeightButton.containsPoint(x, y))
+        {
+            if (config.FishingBarHeight < 568)
+            {
+                config.FishingBarHeight = Math.Min(568, config.FishingBarHeight + 20);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (minusBarHeightButton.containsPoint(x, y))
+        {
+            if (config.FishingBarHeight > 60)
+            {
+                config.FishingBarHeight = Math.Max(60, config.FishingBarHeight - 20);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        // Fish movement speed
+        else if (plusFishSpeedButton.containsPoint(x, y))
+        {
+            if (config.FishMovementSpeedMultiplier < 1.0f)
+            {
+                config.FishMovementSpeedMultiplier = MathF.Min(1.0f, config.FishMovementSpeedMultiplier + 0.05f);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        else if (minusFishSpeedButton.containsPoint(x, y))
+        {
+            if (config.FishMovementSpeedMultiplier > 0.1f)
+            {
+                config.FishMovementSpeedMultiplier = MathF.Max(0.1f, config.FishMovementSpeedMultiplier - 0.05f);
+                saveAction();
+                Game1.playSound("drumkit6");
+            }
+        }
+        // Time rate multiplier
         else if (plusTimeButton.containsPoint(x, y))
         {
             if (config.TimeRateMultiplier < 2.0f)
@@ -481,6 +860,67 @@ public class MultiplierConfigMenu : IClickableMenu
                 saveAction();
                 Game1.playSound("drumkit6");
             }
+        }
+        // Toggle buttons
+        else if (easierFishingButton.containsPoint(x, y))
+        {
+            config.EasierFishing = !config.EasierFishing;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (largerBarButton.containsPoint(x, y))
+        {
+            config.LargerFishingBar = !config.LargerFishingBar;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (slowerFishButton.containsPoint(x, y))
+        {
+            config.SlowerFishMovement = !config.SlowerFishMovement;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (alwaysPerfectButton.containsPoint(x, y))
+        {
+            config.AlwaysPerfect = !config.AlwaysPerfect;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (alwaysTreasureButton.containsPoint(x, y))
+        {
+            config.AlwaysFindTreasure = !config.AlwaysFindTreasure;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (instantCatchButton.containsPoint(x, y))
+        {
+            config.InstantCatchFish = !config.InstantCatchFish;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (instantTreasureButton.containsPoint(x, y))
+        {
+            config.InstantCatchTreasure = !config.InstantCatchTreasure;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (infiniteBaitButton.containsPoint(x, y))
+        {
+            config.InfiniteBait = !config.InfiniteBait;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (infiniteTackleButton.containsPoint(x, y))
+        {
+            config.InfiniteTackle = !config.InfiniteTackle;
+            saveAction();
+            Game1.playSound("drumkit6");
+        }
+        else if (autoHookButton.containsPoint(x, y))
+        {
+            config.AutoHook = !config.AutoHook;
+            saveAction();
+            Game1.playSound("drumkit6");
         }
         else
         {

@@ -1,3 +1,21 @@
 {
-  "Multiplier": 10
+  "Multiplier": 3,
+  "EasierFishing": false,
+  "FishDifficultyMultiplier": 0.5,
+  "FishDifficultyAdditive": -20.0,
+  "LargerFishingBar": true,
+  "FishingBarHeight": 400,
+  "SlowerFishMovement": false,
+  "FishMovementSpeedMultiplier": 0.7,
+  "AlwaysPerfect": false,
+  "AlwaysFindTreasure": false,
+  "InstantCatchFish": false,
+  "InstantCatchTreasure": false,
+  "InfiniteTackle": true,
+  "InfiniteBait": true,
+  "AutoHook": false,
+  "LossAdditive": 0.002,
+  "TimeRateMultiplier": 1.0,
+  "ReloadKey": "F5",
+  "ConfigMenuKey": "K"
 }
