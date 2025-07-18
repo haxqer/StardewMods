@@ -85,7 +85,7 @@ public class ModEntry : Mod
     private ModConfig Config = null!;
     private int EffectiveMultiplier =>
         Config.Multiplier < 3 ? 3 :
-        Config.Multiplier > 50 ? 50 :
+        Config.Multiplier > 100 ? 100 :
         Config.Multiplier;
     private readonly PerScreen<bool> BeganFishingGame = new();
     private readonly PerScreen<int> UpdateIndex = new();
