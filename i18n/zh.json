@@ -1,6 +1,6 @@
 {
   "mod-name": "modtools",
-  "mod-description": "将所有资源获取量翻倍。",
+  "mod-description": "一个功能全面的工具合集模组，包含资源倍数、钓鱼增强、时间控制和各种便利性改进。",
   
   "config.title": "模组配置",
   "config.close-tip": "按ESC键关闭",

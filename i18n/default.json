@@ -1,6 +1,6 @@
 {
   "mod-name": "modtools",
-  "mod-description": "Triples all resource gains.",
+  "mod-description": "A comprehensive toolkit mod featuring resource multipliers, fishing enhancements, time control, and various quality-of-life improvements.",
   
   "config.title": "Mod Configuration",
   "config.close-tip": "Press ESC to close",
