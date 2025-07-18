@@ -169,7 +169,7 @@ public class ModEntry : Mod
             return;
         if (Config.ConfigMenuKey.JustPressed())
         {
-            Game1.activeClickableMenu = new MultiplierConfigMenu(Config, SaveConfig);
+            Game1.activeClickableMenu = new MultiplierConfigMenu(Config, SaveConfig, Helper);
         }
     }
 
@@ -198,8 +198,8 @@ public class ModEntry : Mod
         // Resource multiplier
         api.RegisterClampedOption(
             this.ModManifest,
-            "Resource Multiplier",
-            "Multiplier for resource gains (3-50)",
+            Helper.Translation.Get("config.gmcm.resource-multiplier"),
+            Helper.Translation.Get("config.gmcm.resource-multiplier-desc"),
             () => Config.Multiplier,
             val => { Config.Multiplier = val; Helper.WriteConfig(Config); },
             3, 50
@@ -208,16 +208,16 @@ public class ModEntry : Mod
         // Fishing difficulty options
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Easier Fishing",
-            "Enable easier fishing mode (sets motion type to 2)",
+            Helper.Translation.Get("config.gmcm.easier-fishing"),
+            Helper.Translation.Get("config.gmcm.easier-fishing-desc"),
             () => Config.EasierFishing,
             val => { Config.EasierFishing = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterClampedOption(
             this.ModManifest,
-            "Fish Difficulty Multiplier",
-            "Multiplier for fish difficulty (0.1-2.0, lower = easier)",
+            Helper.Translation.Get("config.gmcm.fish-difficulty-multiplier"),
+            Helper.Translation.Get("config.gmcm.fish-difficulty-multiplier-desc"),
             () => (int)(Config.FishDifficultyMultiplier * 100),
             val => { Config.FishDifficultyMultiplier = val / 100f; Helper.WriteConfig(Config); },
             10, 200
@@ -225,8 +225,8 @@ public class ModEntry : Mod
         
         api.RegisterClampedOption(
             this.ModManifest,
-            "Fish Difficulty Additive",
-            "Additive modifier for fish difficulty (-50 to +50)",
+            Helper.Translation.Get("config.gmcm.fish-difficulty-additive"),
+            Helper.Translation.Get("config.gmcm.fish-difficulty-additive-desc"),
             () => (int)(Config.FishDifficultyAdditive + 50),
             val => { Config.FishDifficultyAdditive = val - 50; Helper.WriteConfig(Config); },
             0, 100
@@ -234,16 +234,16 @@ public class ModEntry : Mod
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Larger Fishing Bar",
-            "Make the fishing bar larger for easier catching",
+            Helper.Translation.Get("config.gmcm.larger-fishing-bar"),
+            Helper.Translation.Get("config.gmcm.larger-fishing-bar-desc"),
             () => Config.LargerFishingBar,
             val => { Config.LargerFishingBar = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterClampedOption(
             this.ModManifest,
-            "Fishing Bar Height",
-            "Height of the fishing bar (60-568)",
+            Helper.Translation.Get("config.gmcm.fishing-bar-height"),
+            Helper.Translation.Get("config.gmcm.fishing-bar-height-desc"),
             () => Config.FishingBarHeight,
             val => { Config.FishingBarHeight = val; Helper.WriteConfig(Config); },
             60, 568
@@ -251,16 +251,16 @@ public class ModEntry : Mod
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Slower Fish Movement",
-            "Make fish move slower in the minigame",
+            Helper.Translation.Get("config.gmcm.slower-fish-movement"),
+            Helper.Translation.Get("config.gmcm.slower-fish-movement-desc"),
             () => Config.SlowerFishMovement,
             val => { Config.SlowerFishMovement = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterClampedOption(
             this.ModManifest,
-            "Fish Movement Speed",
-            "Speed multiplier for fish movement (0.1-1.0, lower = slower)",
+            Helper.Translation.Get("config.gmcm.fish-movement-speed"),
+            Helper.Translation.Get("config.gmcm.fish-movement-speed-desc"),
             () => (int)(Config.FishMovementSpeedMultiplier * 100),
             val => { Config.FishMovementSpeedMultiplier = val / 100f; Helper.WriteConfig(Config); },
             10, 100
@@ -269,56 +269,56 @@ public class ModEntry : Mod
         // Fishing convenience options
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Always Perfect",
-            "Always get perfect catches",
+            Helper.Translation.Get("config.gmcm.always-perfect"),
+            Helper.Translation.Get("config.gmcm.always-perfect-desc"),
             () => Config.AlwaysPerfect,
             val => { Config.AlwaysPerfect = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Always Find Treasure",
-            "Always find treasure while fishing",
+            Helper.Translation.Get("config.gmcm.always-find-treasure"),
+            Helper.Translation.Get("config.gmcm.always-find-treasure-desc"),
             () => Config.AlwaysFindTreasure,
             val => { Config.AlwaysFindTreasure = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Instant Catch Fish",
-            "Instantly catch fish (skip minigame)",
+            Helper.Translation.Get("config.gmcm.instant-catch-fish"),
+            Helper.Translation.Get("config.gmcm.instant-catch-fish-desc"),
             () => Config.InstantCatchFish,
             val => { Config.InstantCatchFish = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Instant Catch Treasure",
-            "Instantly catch treasure",
+            Helper.Translation.Get("config.gmcm.instant-catch-treasure"),
+            Helper.Translation.Get("config.gmcm.instant-catch-treasure-desc"),
             () => Config.InstantCatchTreasure,
             val => { Config.InstantCatchTreasure = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Infinite Bait",
-            "Bait never gets consumed",
+            Helper.Translation.Get("config.gmcm.infinite-bait"),
+            Helper.Translation.Get("config.gmcm.infinite-bait-desc"),
             () => Config.InfiniteBait,
             val => { Config.InfiniteBait = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Infinite Tackle",
-            "Tackle never gets consumed",
+            Helper.Translation.Get("config.gmcm.infinite-tackle"),
+            Helper.Translation.Get("config.gmcm.infinite-tackle-desc"),
             () => Config.InfiniteTackle,
             val => { Config.InfiniteTackle = val; Helper.WriteConfig(Config); }
         );
         
         api.RegisterSimpleOption(
             this.ModManifest,
-            "Auto Hook",
-            "Automatically hook fish when they bite",
+            Helper.Translation.Get("config.gmcm.auto-hook"),
+            Helper.Translation.Get("config.gmcm.auto-hook-desc"),
             () => Config.AutoHook,
             val => { Config.AutoHook = val; Helper.WriteConfig(Config); }
         );
@@ -326,8 +326,8 @@ public class ModEntry : Mod
         // Time rate multiplier
         api.RegisterClampedOption(
             this.ModManifest,
-            "Time Rate Multiplier",
-            "Speed of time passage (0.1-2.0, lower = slower)",
+            Helper.Translation.Get("config.gmcm.time-rate-multiplier"),
+            Helper.Translation.Get("config.gmcm.time-rate-multiplier-desc"),
             () => (int)(Config.TimeRateMultiplier * 100),
             val => { Config.TimeRateMultiplier = val / 100f; Helper.WriteConfig(Config); },
             10, 200
@@ -561,6 +561,7 @@ public class MultiplierConfigMenu : IClickableMenu
 {
     private ModConfig config;
     private Action saveAction;
+    private IModHelper helper;
     
     // Resource multiplier buttons
     private ClickableComponent plusButton;
@@ -600,11 +601,12 @@ public class MultiplierConfigMenu : IClickableMenu
     private const int ToggleButtonWidth = 200;
     private const int ToggleButtonHeight = 40;
 
-    public MultiplierConfigMenu(ModConfig config, Action saveAction)
+    public MultiplierConfigMenu(ModConfig config, Action saveAction, IModHelper helper)
         : base(Game1.viewport.Width / 2 - WindowWidth / 2, Game1.viewport.Height / 2 - WindowHeight / 2, WindowWidth, WindowHeight)
     {
         this.config = config;
         this.saveAction = saveAction;
+        this.helper = helper;
         
         // Initialize all buttons with placeholder positions
         // They will be positioned properly in the draw method
@@ -640,7 +642,7 @@ public class MultiplierConfigMenu : IClickableMenu
         IClickableMenu.drawTextureBox(b, xPositionOnScreen, yPositionOnScreen, width, height, Color.White);
 
         // Title
-        string title = "Mod Configuration";
+        string title = helper.Translation.Get("config.title");
         Vector2 titleSize = Game1.dialogueFont.MeasureString(title);
         b.DrawString(Game1.dialogueFont, title, new Vector2(xPositionOnScreen + width / 2 - titleSize.X / 2, yPositionOnScreen + 20), Color.Black);
 
@@ -656,7 +658,7 @@ public class MultiplierConfigMenu : IClickableMenu
         int toggleY = startY;
 
         // Section 1: Resource Multiplier
-        string resLabel = "Resource Multiplier:";
+        string resLabel = helper.Translation.Get("config.resource-multiplier");
         b.DrawString(Game1.smallFont, resLabel, new Vector2(labelX, startY + 15), Color.Black);
         minusButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
         plusButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
@@ -668,7 +670,7 @@ public class MultiplierConfigMenu : IClickableMenu
 
         // Section 2: Fish Difficulty Multiplier
         startY += 60;
-        string fishLabel = "Fish Difficulty Multiplier:";
+        string fishLabel = helper.Translation.Get("config.fish-difficulty-multiplier");
         b.DrawString(Game1.smallFont, fishLabel, new Vector2(labelX, startY + 15), Color.Black);
         minusFishButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
         plusFishButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
@@ -680,7 +682,7 @@ public class MultiplierConfigMenu : IClickableMenu
 
         // Section 3: Fish Difficulty Additive
         startY += 60;
-        string fishAddLabel = "Fish Difficulty Additive:";
+        string fishAddLabel = helper.Translation.Get("config.fish-difficulty-additive");
         b.DrawString(Game1.smallFont, fishAddLabel, new Vector2(labelX, startY + 15), Color.Black);
         minusFishAddButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
         plusFishAddButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
@@ -692,7 +694,7 @@ public class MultiplierConfigMenu : IClickableMenu
 
         // Section 4: Fishing Bar Height
         startY += 60;
-        string barLabel = "Fishing Bar Height:";
+        string barLabel = helper.Translation.Get("config.fishing-bar-height");
         b.DrawString(Game1.smallFont, barLabel, new Vector2(labelX, startY + 15), Color.Black);
         minusBarHeightButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
         plusBarHeightButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
@@ -704,7 +706,7 @@ public class MultiplierConfigMenu : IClickableMenu
 
         // Section 5: Fish Movement Speed
         startY += 60;
-        string speedLabel = "Fish Movement Speed:";
+        string speedLabel = helper.Translation.Get("config.fish-movement-speed");
         b.DrawString(Game1.smallFont, speedLabel, new Vector2(labelX, startY + 15), Color.Black);
         minusFishSpeedButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
         plusFishSpeedButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
@@ -716,7 +718,7 @@ public class MultiplierConfigMenu : IClickableMenu
 
         // Section 6: Time Rate Multiplier
         startY += 60;
-        string timeLabel = "Time Rate Multiplier:";
+        string timeLabel = helper.Translation.Get("config.time-rate-multiplier");
         b.DrawString(Game1.smallFont, timeLabel, new Vector2(labelX, startY + 15), Color.Black);
         minusTimeButton.bounds = new Rectangle(minusX, startY, ButtonSize, ButtonSize);
         plusTimeButton.bounds = new Rectangle(plusX, startY, ButtonSize, ButtonSize);
@@ -728,57 +730,57 @@ public class MultiplierConfigMenu : IClickableMenu
 
         // Right column: Toggle options
         // Section 1: Difficulty toggles
-        string difficultyTitle = "Difficulty Options:";
+        string difficultyTitle = helper.Translation.Get("config.difficulty-options");
         b.DrawString(Game1.smallFont, difficultyTitle, new Vector2(toggleX, toggleY), Color.Black);
         toggleY += 30;
 
         easierFishingButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, easierFishingButton, "Easier Fishing", config.EasierFishing);
+        drawToggleButton(b, easierFishingButton, helper.Translation.Get("config.easier-fishing"), config.EasierFishing);
         toggleY += 50;
 
         largerBarButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, largerBarButton, "Larger Bar", config.LargerFishingBar);
+        drawToggleButton(b, largerBarButton, helper.Translation.Get("config.larger-bar"), config.LargerFishingBar);
         toggleY += 50;
 
         slowerFishButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, slowerFishButton, "Slower Fish", config.SlowerFishMovement);
+        drawToggleButton(b, slowerFishButton, helper.Translation.Get("config.slower-fish"), config.SlowerFishMovement);
         toggleY += 50;
 
         // Section 2: Convenience toggles
         toggleY += 20;
-        string convenienceTitle = "Convenience Options:";
+        string convenienceTitle = helper.Translation.Get("config.convenience-options");
         b.DrawString(Game1.smallFont, convenienceTitle, new Vector2(toggleX, toggleY), Color.Black);
         toggleY += 30;
 
         alwaysPerfectButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, alwaysPerfectButton, "Always Perfect", config.AlwaysPerfect);
+        drawToggleButton(b, alwaysPerfectButton, helper.Translation.Get("config.always-perfect"), config.AlwaysPerfect);
         toggleY += 50;
 
         alwaysTreasureButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, alwaysTreasureButton, "Always Treasure", config.AlwaysFindTreasure);
+        drawToggleButton(b, alwaysTreasureButton, helper.Translation.Get("config.always-treasure"), config.AlwaysFindTreasure);
         toggleY += 50;
 
         instantCatchButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, instantCatchButton, "Instant Catch", config.InstantCatchFish);
+        drawToggleButton(b, instantCatchButton, helper.Translation.Get("config.instant-catch"), config.InstantCatchFish);
         toggleY += 50;
 
         instantTreasureButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, instantTreasureButton, "Instant Treasure", config.InstantCatchTreasure);
+        drawToggleButton(b, instantTreasureButton, helper.Translation.Get("config.instant-treasure"), config.InstantCatchTreasure);
         toggleY += 50;
 
         infiniteBaitButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, infiniteBaitButton, "Infinite Bait", config.InfiniteBait);
+        drawToggleButton(b, infiniteBaitButton, helper.Translation.Get("config.infinite-bait"), config.InfiniteBait);
         toggleY += 50;
 
         infiniteTackleButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, infiniteTackleButton, "Infinite Tackle", config.InfiniteTackle);
+        drawToggleButton(b, infiniteTackleButton, helper.Translation.Get("config.infinite-tackle"), config.InfiniteTackle);
         toggleY += 50;
 
         autoHookButton.bounds = new Rectangle(toggleX, toggleY, ToggleButtonWidth, ToggleButtonHeight);
-        drawToggleButton(b, autoHookButton, "Auto Hook", config.AutoHook);
+        drawToggleButton(b, autoHookButton, helper.Translation.Get("config.auto-hook"), config.AutoHook);
 
         // Instructions
-        string tip = "Press ESC to close";
+        string tip = helper.Translation.Get("config.close-tip");
         Vector2 tipSize = Game1.tinyFont.MeasureString(tip);
         b.DrawString(Game1.tinyFont, tip, new Vector2(xPositionOnScreen + width - tipSize.X - 32, yPositionOnScreen + height - tipSize.Y - 32), Color.Gray);
 
