@@ -202,7 +202,7 @@ public class ModEntry : Mod
             Helper.Translation.Get("config.gmcm.resource-multiplier-desc"),
             () => Config.Multiplier,
             val => { Config.Multiplier = val; Helper.WriteConfig(Config); },
-            3, 50
+            3, 100 // changed from 50 to 100
         );
         
         // Fishing difficulty options
@@ -808,7 +808,7 @@ public class MultiplierConfigMenu : IClickableMenu
         // Resource multiplier
         if (plusButton.containsPoint(x, y))
         {
-            if (config.Multiplier < 50)
+            if (config.Multiplier < 100) // changed from 50 to 100
             {
                 config.Multiplier++;
                 saveAction();
