@@ -279,8 +279,122 @@ public class ModEntry : Mod
         334, // 铜锭 / Copper Bar
         335, // 铁锭 / Iron Bar
         336, // 金锭 / Gold Bar
-        337  // 铱锭 / Iridium Bar
+        337, // 铱锭 / Iridium Bar
         // Note: Refined Quartz (338) is already included above
+        
+        // 肥料和土壤 / Fertilizers and Soil (368-372)
+        368, // 基础肥料 / Basic Fertilizer
+        369, // 优质肥料 / Quality Fertilizer
+        370, // 基础保水土壤 / Basic Retaining Soil
+        371, // 优质保水土壤 / Quality Retaining Soil
+        372, // 蛤蜊 / Clam
+        
+        // 海滩物品和农产品 / Beach Items and Agricultural Products (392-433)
+        392, // 鹦鹉螺壳 / Nautilus Shell
+        393, // 珊瑚 / Coral
+        394, // 彩虹贝壳 / Rainbow Shell
+        395, // 咖啡 / Coffee
+        396, // 香料浆果 / Spice Berry
+        397, // 海胆 / Sea Urchin
+        398, // 葡萄 / Grape
+        399, // 春葱 / Spring Onion
+        400, // 草莓 / Strawberry
+        401, // 稻草地板 / Straw Floor
+        402, // 甜豌豆 / Sweet Pea
+        403, // 野外零食 / Field Snack
+        404, // 普通蘑菇 / Common Mushroom
+        405, // 木制路径 / Wood Path
+        406, // 野李子 / Wild Plum
+        407, // 砾石路径 / Gravel Path
+        408, // 榛子 / Hazelnut
+        409, // 水晶路径 / Crystal Path
+        410, // 黑莓 / Blackberry
+        411, // 鹅卵石路径 / Cobblestone Path
+        412, // 冬根 / Winter Root
+        413, // 蓝色史莱姆蛋 / Blue Slime Egg
+        414, // 水晶果 / Crystal Fruit
+        415, // 踏脚石路径 / Stepping Stone Path
+        416, // 雪山药 / Snow Yam
+        417, // 甜宝石浆果 / Sweet Gem Berry
+        418, // 番红花 / Crocus
+        419, // 醋 / Vinegar
+        420, // 红蘑菇 / Red Mushroom
+        421, // 向日葵 / Sunflower
+        422, // 紫蘑菇 / Purple Mushroom
+        423, // 大米 / Rice
+        424, // 奶酪 / Cheese
+        425, // 仙女种子 / Fairy Seeds
+        426, // 山羊奶酪 / Goat Cheese
+        427, // 郁金香球茎 / Tulip Bulb
+        428, // 布料 / Cloth
+        429, // 爵士种子 / Jazz Seeds
+        430, // 松露 / Truffle
+        431, // 向日葵种子 / Sunflower Seeds
+        432, // 松露油 / Truffle Oil
+        433, // 咖啡豆 / Coffee Bean
+        
+        // 肥料和种子 / Fertilizers and Seeds (465-499)
+        465, // 生长激素 / Speed-Gro
+        466, // 豪华生长激素 / Deluxe Speed-Gro
+        472, // 防风草种子 / Parsnip Seeds
+        473, // 豆子种子 / Bean Starter
+        474, // 花椰菜种子 / Cauliflower Seeds
+        475, // 土豆种子 / Potato Seeds
+        476, // 大蒜种子 / Garlic Seeds
+        477, // 羽衣甘蓝种子 / Kale Seeds
+        478, // 大黄种子 / Rhubarb Seeds
+        479, // 甜瓜种子 / Melon Seeds
+        480, // 番茄种子 / Tomato Seeds
+        481, // 蓝莓种子 / Blueberry Seeds
+        482, // 辣椒种子 / Pepper Seeds
+        483, // 小麦种子 / Wheat Seeds
+        484, // 萝卜种子 / Radish Seeds
+        485, // 红甘蓝种子 / Red Cabbage Seeds
+        486, // 杨桃种子 / Starfruit Seeds
+        487, // 玉米种子 / Corn Seeds
+        488, // 茄子种子 / Eggplant Seeds
+        489, // 洋蓟种子 / Artichoke Seeds
+        490, // 南瓜种子 / Pumpkin Seeds
+        491, // 小白菜种子 / Bok Choy Seeds
+        492, // 山药种子 / Yam Seeds
+        493, // 蔓越莓种子 / Cranberry Seeds
+        494, // 甜菜种子 / Beet Seeds
+        495, // 春季种子 / Spring Seeds
+        496, // 夏季种子 / Summer Seeds
+        497, // 秋季种子 / Fall Seeds
+        498, // 冬季种子 / Winter Seeds
+        499, // 远古种子 / Ancient Seeds
+        
+        // 晶洞和矿物 / Geodes and Minerals (535-578)
+        535, // 晶洞 / Geode
+        536, // 冰冻晶洞 / Frozen Geode
+        537, // 岩浆晶洞 / Magma Geode
+        // Note: Minerals 538-578 are already included in the original list above
+        
+        // 食物和饮料 / Food and Beverages (604-618)
+        604, // 李子布丁 / Plum Pudding
+        605, // 洋蓟蘸酱 / Artichoke Dip
+        606, // 炒菜 / Stir Fry
+        607, // 烤榛子 / Roasted Hazelnuts
+        608, // 南瓜派 / Pumpkin Pie
+        609, // 萝卜沙拉 / Radish Salad
+        610, // 水果沙拉 / Fruit Salad
+        611, // 黑莓馅饼 / Blackberry Cobbler
+        612, // 蔓越莓糖果 / Cranberry Candy
+        613, // 苹果 / Apple
+        614, // 绿茶 / Green Tea
+        618, // 意式烤面包 / Bruschetta
+        
+        // 水果、工具和食物 / Fruits, Tools and Food (634-651)
+        634, // 杏子 / Apricot
+        635, // 橙子 / Orange
+        636, // 桃子 / Peach
+        637, // 石榴 / Pomegranate
+        638, // 樱桃 / Cherry
+        645, // 铱制洒水器 / Iridium Sprinkler
+        648, // 凉拌卷心菜 / Coleslaw
+        649, // 蕨菜烩饭 / Fiddlehead Risotto
+        651  // 罂粟籽松饼 / Poppyseed Muffin
     };
 
     // 鱼类ID集合 / Fish ID set
