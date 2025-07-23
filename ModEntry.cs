@@ -400,7 +400,69 @@ public class ModEntry : Mod
         681, // 雨图腾 / Rain Totem
         688, // 农场传送图腾 / Warp Totem: Farm
         689, // 山区传送图腾 / Warp Totem: Mountains
-        690  // 海滩传送图腾 / Warp Totem: Beach
+        690, // 海滩传送图腾 / Warp Totem: Beach
+        
+        // 鱼类 / Fish (698-702)
+        698, // 鲟鱼 / Sturgeon
+        699, // 虎鳟鱼 / Tiger Trout
+        700, // 牛头鱼 / Bullhead
+        701, // 罗非鱼 / Tilapia
+        702, // 白鲑 / Chub
+        
+        // 鱼类 / Fish (704-708)
+        704, // 剑鱼 / Dorado
+        705, // 长鳍金枪鱼 / Albacore
+        706, // 西鲱 / Shad
+        707, // 鳕鱼 / Lingcod
+        708, // 大比目鱼 / Halibut
+        
+        // 海鲜、树液和食物 / Seafood, Tree Products and Food (715-734)
+        715, // 龙虾 / Lobster
+        716, // 小龙虾 / Crayfish
+        717, // 螃蟹 / Crab
+        718, // 鸟蛤 / Cockle
+        719, // 贻贝 / Mussel
+        720, // 虾 / Shrimp
+        721, // 蜗牛 / Snail
+        722, // 海螺 / Periwinkle
+        723, // 牡蛎 / Oyster
+        724, // 枫糖浆 / Maple Syrup
+        725, // 橡树树脂 / Oak Resin
+        726, // 松焦油 / Pine Tar
+        727, // 杂烩汤 / Chowder
+        728, // 鱼汤 / Fish Stew
+        729, // 蜗牛菜 / Escargot
+        730, // 龙虾浓汤 / Lobster Bisque
+        731, // 枫糖条 / Maple Bar
+        732, // 蟹饼 / Crab Cakes
+        733, // 虾鸡尾酒 / Shrimp Cocktail
+        734, // 木跳鱼 / Woodskip
+        
+        // 特殊物品 / Special Items (749, 787, 802, 803, 805, 815, 819)
+        749, // 万能晶洞 / Omni Geode
+        787, // 电池包 / Battery Pack
+        802, // 仙人掌种子 / Cactus Seeds
+        803, // 铱制牛奶 / Iridium Milk
+        805, // 树木肥料 / Tree Fertilizer
+        815, // 茶叶 / Tea Leaves
+        819, // 万能晶洞石 / Omni Geode Stone
+        
+        // 热带水果和鱼类 / Tropical Fruits and Fish (832, 833, 834, 836, 837, 838)
+        832, // 菠萝 / Pineapple
+        833, // 菠萝种子 / Pineapple Seeds
+        834, // 芒果 / Mango
+        836, // 黄貂鱼 / Stingray
+        837, // 狮子鱼 / Lionfish
+        838, // 蓝盘鱼 / Blue Discus
+        
+        // Qi物品 / Qi Items (886, 889, 890)
+        // Note: ID 886 does not exist in items.txt
+        889, // Qi果实 / Qi Fruit
+        890, // Qi豆 / Qi Bean
+        
+        // 高级肥料 / Advanced Fertilizers (918, 919)
+        918, // 超级生长激素 / Hyper Speed-Gro
+        919  // 豪华肥料 / Deluxe Fertilizer
     };
 
     // 鱼类ID集合 / Fish ID set
