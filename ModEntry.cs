@@ -396,10 +396,8 @@ public class ModEntry : Mod
         649, // 蕨菜烩饭 / Fiddlehead Risotto
         651, // 罂粟籽松饼 / Poppyseed Muffin
         
-        // 传送图腾 / Warp Totems (681, 688, 689, 690)
+        // 传送图腾 / Warp Totems 
         681, // 雨图腾 / Rain Totem
-        
-        // 传送图腾 / Warp Totems
         688, // 农场传送图腾 / Warp Totem: Farm
         689, // 山区传送图腾 / Warp Totem: Mountains
         690  // 海滩传送图腾 / Warp Totem: Beach
