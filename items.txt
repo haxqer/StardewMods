@@ -1,3 +1,4 @@
+
 Weeds:0
 Diamond Stone:2
 Ruby Stone:4

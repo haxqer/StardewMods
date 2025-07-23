@@ -394,7 +394,11 @@ public class ModEntry : Mod
         645, // 铱制洒水器 / Iridium Sprinkler
         648, // 凉拌卷心菜 / Coleslaw
         649, // 蕨菜烩饭 / Fiddlehead Risotto
-        651  // 罂粟籽松饼 / Poppyseed Muffin
+        651, // 罂粟籽松饼 / Poppyseed Muffin
+        
+        // 传送图腾 / Warp Totems (681, 688, 689, 690)
+        681  // 雨图腾 / Rain Totem
+        // Note: IDs 688, 689, 690 do not exist in items.txt
     };
 
     // 鱼类ID集合 / Fish ID set
