@@ -397,8 +397,12 @@ public class ModEntry : Mod
         651, // 罂粟籽松饼 / Poppyseed Muffin
         
         // 传送图腾 / Warp Totems (681, 688, 689, 690)
-        681  // 雨图腾 / Rain Totem
-        // Note: IDs 688, 689, 690 do not exist in items.txt
+        681, // 雨图腾 / Rain Totem
+        
+        // 传送图腾 / Warp Totems
+        688, // 农场传送图腾 / Warp Totem: Farm
+        689, // 山区传送图腾 / Warp Totem: Mountains
+        690  // 海滩传送图腾 / Warp Totem: Beach
     };
 
     // 鱼类ID集合 / Fish ID set
