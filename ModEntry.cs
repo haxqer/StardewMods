@@ -132,7 +132,229 @@ public class ModEntry : Mod
         575, // 黑曜石 / Obsidian
         576, // 板岩 / Slate
         577, // 仙石 / Fairy Stone
-        578  // 星之碎片 / Star Shards
+        578, // 星之碎片 / Star Shards
+        
+        // 鱼类 / Fish (129-165)
+        128, // 河豚 / Pufferfish
+        129, // 凤尾鱼 / Anchovy
+        130, // 金枪鱼 / Tuna
+        131, // 沙丁鱼 / Sardine
+        132, // 鲤科鱼 / Bream
+        136, // 大口黑鲈 / Largemouth Bass
+        137, // 小口黑鲈 / Smallmouth Bass
+        138, // 虹鳟鱼 / Rainbow Trout
+        139, // 鲑鱼 / Salmon
+        140, // 梭子鱼 / Walleye
+        141, // 鲈鱼 / Perch
+        142, // 鲤鱼 / Carp
+        143, // 鲶鱼 / Catfish
+        144, // 梭鱼 / Pike
+        145, // 太阳鱼 / Sunfish
+        146, // 红鲻鱼 / Red Mullet
+        147, // 鲱鱼 / Herring
+        148, // 鳗鱼 / Eel
+        149, // 章鱼 / Octopus
+        150, // 红鲷鱼 / Red Snapper
+        151, // 鱿鱼 / Squid
+        152, // 海藻 / Seaweed
+        153, // 绿藻 / Green Algae
+        154, // 海参 / Sea Cucumber
+        155, // 超级海参 / Super Cucumber
+        156, // 鬼鱼 / Ghostfish
+        157, // 白藻 / White Algae
+        158, // 石鱼 / Stonefish
+        159, // 绯红鱼 / Crimsonfish
+        160, // 琵琶鱼 / Angler
+        161, // 冰鳕鱼 / Ice Pip
+        162, // 熔岩鳗鱼 / Lava Eel
+        163, // 传说鱼 / Legend
+        164, // 沙鱼 / Sandfish
+        165, // 蝎子鲤鱼 / Scorpion Carp
+        
+        // 农产品 / Agricultural Products (174-190)
+        174, // 大鸡蛋 / Large Egg
+        176, // 鸡蛋 / Egg
+        178, // 干草 / Hay
+        180, // 鸡蛋 / Egg
+        182, // 大鸡蛋 / Large Egg
+        184, // 牛奶 / Milk
+        186, // 大牛奶 / Large Milk
+        188, // 青豆 / Green Bean
+        190, // 花椰菜 / Cauliflower
+        
+        // 农作物 / Crops (192-289)
+        192, // 土豆 / Potato
+        194, // 煎蛋 / Fried Egg
+        195, // 煎蛋卷 / Omelet
+        196, // 沙拉 / Salad
+        197, // 奶酪花椰菜 / Cheese Cauliflower
+        198, // 烤鱼 / Baked Fish
+        199, // 防风草汤 / Parsnip Soup
+        200, // 蔬菜杂烩 / Vegetable Medley
+        201, // 完整早餐 / Complete Breakfast
+        202, // 炸鱿鱼 / Fried Calamari
+        203, // 奇怪面包 / Strange Bun
+        204, // 幸运午餐 / Lucky Lunch
+        205, // 炸蘑菇 / Fried Mushroom
+        206, // 披萨 / Pizza
+        207, // 豆子火锅 / Bean Hotpot
+        208, // 糖渍山药 / Glazed Yams
+        209, // 鲤鱼惊喜 / Carp Surprise
+        210, // 薯饼 / Hashbrowns
+        211, // 煎饼 / Pancakes
+        212, // 鲑鱼晚餐 / Salmon Dinner
+        213, // 鱼卷饼 / Fish Taco
+        214, // 脆皮鲈鱼 / Crispy Bass
+        215, // 辣椒爆米花 / Pepper Poppers
+        216, // 面包 / Bread
+        218, // 冬阴功汤 / Tom Kha Soup
+        219, // 鳟鱼汤 / Trout Soup
+        220, // 巧克力蛋糕 / Chocolate Cake
+        221, // 粉色蛋糕 / Pink Cake
+        222, // 大黄派 / Rhubarb Pie
+        223, // 饼干 / Cookies
+        224, // 意大利面 / Spaghetti
+        225, // 炸鳗鱼 / Fried Eel
+        226, // 辣鳗鱼 / Spicy Eel
+        227, // 生鱼片 / Sashimi
+        228, // 寿司卷 / Maki Roll
+        229, // 玉米饼 / Tortilla
+        230, // 红盘 / Red Plate
+        231, // 茄子帕尔马干酪 / Eggplant Parmesan
+        232, // 米布丁 / Rice Pudding
+        233, // 冰淇淋 / Ice Cream
+        234, // 蓝莓馅饼 / Blueberry Tart
+        235, // 秋季丰收 / Autumn's Bounty
+        236, // 南瓜汤 / Pumpkin Soup
+        237, // 超级餐 / Super Meal
+        238, // 蔓越莓酱 / Cranberry Sauce
+        239, // 填料 / Stuffing
+        240, // 农夫午餐 / Farmer's Lunch
+        241, // 生存汉堡 / Survival Burger
+        242, // 海洋之菜 / Dish O' The Sea
+        243, // 矿工美食 / Miner's Treat
+        244, // 根菜拼盘 / Roots Platter
+        245, // 糖 / Sugar
+        246, // 小麦粉 / Wheat Flour
+        247, // 油 / Oil
+        248, // 大蒜 / Garlic
+        250, // 羽衣甘蓝 / Kale
+        251, // 茶树苗 / Tea Sapling
+        252, // 大黄 / Rhubarb
+        253, // 三倍浓缩咖啡 / Triple Shot Espresso
+        254, // 甜瓜 / Melon
+        256, // 番茄 / Tomato
+        257, // 羊肚菌 / Morel
+        258, // 蓝莓 / Blueberry
+        259, // 蕨菜 / Fiddlehead Fern
+        260, // 辣椒 / Hot Pepper
+        262, // 小麦 / Wheat
+        264, // 萝卜 / Radish
+        265, // 海沫布丁 / Seafoam Pudding
+        266, // 红甘蓝 / Red Cabbage
+        267, // 比目鱼 / Flounder
+        268, // 杨桃 / Starfruit
+        269, // 午夜鲤鱼 / Midnight Carp
+        270, // 玉米 / Corn
+        271, // 糙米 / Unmilled Rice
+        272, // 茄子 / Eggplant
+        273, // 稻苗 / Rice Shoot
+        274, // 洋蓟 / Artichoke
+        275, // 古物宝箱 / Artifact Trove
+        276, // 南瓜 / Pumpkin
+        277, // 枯萎花束 / Wilted Bouquet
+        278, // 小白菜 / Bok Choy
+        279, // 魔法岩石糖 / Magic Rock Candy
+        280, // 山药 / Yam
+        281, // 鸡油菌 / Chanterelle
+        282, // 蔓越莓 / Cranberries
+        283, // 冬青 / Holly
+        284, // 甜菜 / Beet
+        286, // 樱桃炸弹 / Cherry Bomb
+        287, // 炸弹 / Bomb
+        288, // 超级炸弹 / Mega Bomb
+        289, // 鸵鸟蛋 / Ostrich Egg
+        
+        // 金属锭 / Metal Bars (334-338)
+        334, // 铜锭 / Copper Bar
+        335, // 铁锭 / Iron Bar
+        336, // 金锭 / Gold Bar
+        337  // 铱锭 / Iridium Bar
+        // Note: Refined Quartz (338) is already included above
+    };
+
+    // 鱼类ID集合 / Fish ID set
+    private static readonly HashSet<int> FishItemIds = new()
+    {
+        128, // 河豚 / Pufferfish
+        129, // 凤尾鱼 / Anchovy
+        130, // 金枪鱼 / Tuna
+        131, // 沙丁鱼 / Sardine
+        132, // 鲤科鱼 / Bream
+        136, // 大口黑鲈 / Largemouth Bass
+        137, // 小口黑鲈 / Smallmouth Bass
+        138, // 虹鳟鱼 / Rainbow Trout
+        139, // 鲑鱼 / Salmon
+        140, // 梭子鱼 / Walleye
+        141, // 鲈鱼 / Perch
+        142, // 鲤鱼 / Carp
+        143, // 鲶鱼 / Catfish
+        144, // 梭鱼 / Pike
+        145, // 太阳鱼 / Sunfish
+        146, // 红鲻鱼 / Red Mullet
+        147, // 鲱鱼 / Herring
+        148, // 鳗鱼 / Eel
+        149, // 章鱼 / Octopus
+        150, // 红鲷鱼 / Red Snapper
+        151, // 鱿鱼 / Squid
+        154, // 海参 / Sea Cucumber
+        155, // 超级海参 / Super Cucumber
+        156, // 鬼鱼 / Ghostfish
+        158, // 石鱼 / Stonefish
+        159, // 绯红鱼 / Crimsonfish
+        160, // 琵琶鱼 / Angler
+        161, // 冰鳕鱼 / Ice Pip
+        162, // 熔岩鳗鱼 / Lava Eel
+        163, // 传说鱼 / Legend
+        164, // 沙鱼 / Sandfish
+        165, // 蝎子鲤鱼 / Scorpion Carp
+        267, // 比目鱼 / Flounder
+        269, // 午夜鲤鱼 / Midnight Carp
+        682, // 变异鲤鱼 / Mutant Carp
+        698, // 鲟鱼 / Sturgeon
+        699, // 虎鳟鱼 / Tiger Trout
+        700, // 牛头鱼 / Bullhead
+        701, // 罗非鱼 / Tilapia
+        702, // 白鲑 / Chub
+        704, // 剑鱼 / Dorado
+        705, // 长鳍金枪鱼 / Albacore
+        706, // 西鲱 / Shad
+        707, // 鳕鱼 / Lingcod
+        708, // 大比目鱼 / Halibut
+        715, // 龙虾 / Lobster
+        716, // 小龙虾 / Crayfish
+        717, // 螃蟹 / Crab
+        718, // 鸟蛤 / Cockle
+        719, // 贻贝 / Mussel
+        720, // 虾 / Shrimp
+        721, // 蜗牛 / Snail
+        722, // 海螺 / Periwinkle
+        723, // 牡蛎 / Oyster
+        734, // 木跳鱼 / Woodskip
+        775, // 冰川鱼 / Glacierfish
+        795, // 虚空鲑鱼 / Void Salmon
+        796, // 史莱姆鱼 / Slimejack
+        798, // 午夜鱿鱼 / Midnight Squid
+        799, // 幽灵鱼 / Spook Fish
+        800, // 水滴鱼 / Blobfish
+        836, // 黄貂鱼 / Stingray
+        837, // 狮子鱼 / Lionfish
+        838, // 蓝盘鱼 / Blue Discus
+        898, // 绯红鱼之子 / Son of Crimsonfish
+        899, // 安格勒女士 / Ms. Angler
+        900, // 传说鱼II / Legend II
+        901, // 放射性鲤鱼 / Radioactive Carp
+        902  // 小冰川鱼 / Glacierfish Jr.
     };
 
     // 防递归锁
@@ -143,6 +365,16 @@ public class ModEntry : Mod
         Config.Multiplier < 3 ? 3 :
         Config.Multiplier > 100 ? 100 :
         Config.Multiplier;
+
+    /// <summary>
+    /// 检查物品是否为鱼类 / Check if an item is a fish
+    /// </summary>
+    /// <param name="item">要检查的物品 / Item to check</param>
+    /// <returns>如果是鱼类返回true，否则返回false / Returns true if the item is a fish, false otherwise</returns>
+    private static bool IsFish(SObject item)
+    {
+        return item != null && FishItemIds.Contains(item.ParentSheetIndex);
+    }
     private readonly PerScreen<bool> BeganFishingGame = new();
     private readonly PerScreen<int> UpdateIndex = new();
     private int timeSkipCounter = 0;
