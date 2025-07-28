@@ -33,6 +33,9 @@ public static class ItemDefinitions
         337, // 铱锭 / Iridium Bar
         
         // 其他基础材料 / Other Basic Materials
+        309, // 橡子 / Acorn
+        310, // 枫树种子 / Maple Seed
+        311, // 松果 / Pine Cone
         771, // 纤维 / Fiber
         330, // 粘土 / Clay
         80,  // 石英 / Quartz
@@ -132,6 +135,8 @@ public static class ItemDefinitions
         398, // 葡萄 / Grape
         400, // 草莓 / Strawberry
         423, // 大米 / Rice
+        454, // 远古水果 / Ancient Fruit
+        304, // 啤酒花 / Hops
         
         // 种子 / Seeds
         472, // 防风草种子 / Parsnip Seeds
@@ -161,11 +166,15 @@ public static class ItemDefinitions
         496, // 夏季种子 / Summer Seeds
         497, // 秋季种子 / Fall Seeds
         498, // 冬季种子 / Winter Seeds
+        347, // 稀有种子 / Rare Seed
         499, // 远古种子 / Ancient Seeds
         802, // 仙人掌种子 / Cactus Seeds
         833, // 菠萝种子 / Pineapple Seeds
         
         // 热带水果 / Tropical Fruits
+        88,  // 椰子 / Coconut
+        90,  // 仙人掌果 / Cactus Fruit
+        91,  // 香蕉 / Banana
         832, // 菠萝 / Pineapple
         834, // 芒果 / Mango
         
@@ -187,14 +196,21 @@ public static class ItemDefinitions
         186, // 大牛奶 / Large Milk
         424, // 奶酪 / Cheese
         426, // 山羊奶酪 / Goat Cheese
+        436, // 羊奶 / Goat Milk
+        438, // 大羊奶 / Large Goat Milk
         803, // 铱制牛奶 / Iridium Milk
         289, // 鸵鸟蛋 / Ostrich Egg
+        305, // 虚空蛋 / Void Egg
+        440, // 羊毛 / Wool
+        442, // 鸭蛋 / Duck Egg
+        444, // 鸭毛 / Duck Feather
         
         // 其他农产品 / Other Agricultural Products
         178, // 干草 / Hay
         188, // 青豆 / Green Bean
         190, // 花椰菜 / Cauliflower
         430, // 松露 / Truffle
+        340, // 蜂蜜 / Honey
         432, // 松露油 / Truffle Oil
         
         // ===== 鱼类 / Fish =====
@@ -288,6 +304,11 @@ public static class ItemDefinitions
         157, // 白藻 / White Algae
         
         // ===== 采集物品 / Foraged Items =====
+        18,  // 水仙花 / Daffodil
+        20,  // 韭葱 / Leek
+        22,  // 蒲公英 / Dandelion
+        24,  // 防风草 / Parsnip
+        78,  // 洞穴胡萝卜 / Cave Carrot
         404, // 普通蘑菇 / Common Mushroom
         406, // 野李子 / Wild Plum
         408, // 榛子 / Hazelnut
@@ -310,6 +331,18 @@ public static class ItemDefinitions
         281, // 鸡油菌 / Chanterelle
         282, // 蔓越莓 / Cranberries
         283, // 冬青 / Holly
+        296, // 鲑鱼莓 / Salmonberry
+        376, // 罂粟花 / Poppy
+        396, // 香料浆果 / Spice Berry
+        398, // 葡萄 / Grape
+        399, // 春葱 / Spring Onion
+        402, // 甜豌豆 / Sweet Pea
+        406, // 野李子 / Wild Plum
+        408, // 榛子 / Hazelnut
+        410, // 黑莓 / Blackberry
+        414, // 水晶果 / Crystal Fruit
+        418, // 番红花 / Crocus
+        421, // 向日葵 / Sunflower
         815, // 茶叶 / Tea Leaves
         
         // ===== 树液产品 / Tree Products =====
@@ -405,6 +438,21 @@ public static class ItemDefinitions
         // 饮料 / Beverages
         395, // 咖啡 / Coffee
         253, // 三倍浓缩咖啡 / Triple Shot Espresso
+        303, // 淡啤酒 / Pale Ale
+        306, // 蛋黄酱 / Mayonnaise
+        307, // 鸭蛋黄酱 / Duck Mayonnaise
+        308, // 虚空蛋黄酱 / Void Mayonnaise
+        342, // 腌菜 / Pickles
+        346, // 啤酒 / Beer
+        348, // 葡萄酒 / Wine
+        349, // 能量补剂 / Energy Tonic
+        350, // 果汁 / Juice
+        351, // 肌肉修复剂 / Muscle Remedy
+        445, // 鱼子酱 / Caviar
+        447, // 陈年鱼子 / Aged Roe
+        456, // 藻类汤 / Algae Soup
+        457, // 淡肉汤 / Pale Broth
+        459, // 蜂蜜酒 / Mead
         614, // 绿茶 / Green Tea
         
         // 调味料 / Condiments
@@ -422,6 +470,7 @@ public static class ItemDefinitions
         787, // 电池包 / Battery Pack
         
         // ===== 传送图腾 / Warp Totems =====
+        261, // 沙漠传送图腾 / Warp Totem: Desert
         681, // 雨图腾 / Rain Totem
         688, // 农场传送图腾 / Warp Totem: Farm
         689, // 山区传送图腾 / Warp Totem: Mountains
@@ -433,10 +482,22 @@ public static class ItemDefinitions
         288, // 超级炸弹 / Mega Bomb
         
         // ===== 特殊物品 / Special Items =====
+        107, // 恐龙蛋 / Dinosaur Egg
         275, // 古物宝箱 / Artifact Trove
         277, // 枯萎花束 / Wilted Bouquet
         413, // 蓝色史莱姆蛋 / Blue Slime Egg
         889, // Qi果实 / Qi Fruit
+        341, // 茶具 / Tea Set
+        373, // 金南瓜 / Golden Pumpkin
+        413, // 蓝色史莱姆蛋 / Blue Slime Egg
+        434, // 星之果实 / Stardrop
+        437, // 红色史莱姆蛋 / Red Slime Egg
+        439, // 紫色史莱姆蛋 / Purple Slime Egg
+        446, // 兔脚 / Rabbit's Foot
+        458, // 花束 / Bouquet
+        876, // 五彩果冻 / Prismatic Jelly
+        879, // 怪物麝香 / Monster Musk
+        881, // 骨头碎片 / Bone Fragment
         890, // Qi豆 / Qi Bean
         
         // ===== 装饰和路径 / Decorations and Paths =====
