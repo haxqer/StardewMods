@@ -636,6 +636,6 @@ public static class ItemDefinitions
             return false;
             
         // 使用QualifiedItemId判断，以(O)开头的都是资源 / Use QualifiedItemId to check, items starting with (O) are resources
-        return item.QualifiedItemId.StartsWith("(O)");
+        return item.QualifiedItemId.StartsWith("(O)") && ResourceItemIds.Contains(item.ItemId);
     }
 } 
