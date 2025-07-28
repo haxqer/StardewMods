@@ -25,12 +25,14 @@ public static class ItemDefinitions
         "384", // 金矿 / Gold Ore
         "386", // 铱矿 / Iridium Ore
         "382", // 煤炭 / Coal
+        "909", // 放射性矿石 / Radioactive Ore
         
         // 金属锭 / Metal Bars
         "334", // 铜锭 / Copper Bar
         "335", // 铁锭 / Iron Bar
         "336", // 金锭 / Gold Bar
         "337", // 铱锭 / Iridium Bar
+        "910", // 放射性锭 / Radioactive Bar
         
         // 其他基础材料 / Other Basic Materials
         "309", // 橡子 / Acorn
@@ -39,12 +41,16 @@ public static class ItemDefinitions
         "771", // 纤维 / Fiber
         "330", // 粘土 / Clay
         "80",  // 石英 / Quartz
+        "Moss", // 苔藓 / Moss
+        "MossySeed", // 苔藓种子 / Mossy Seed
         "338", // 精炼石英 / Refined Quartz
         "766", // 史莱姆 / Slime
         "767", // 蝙蝠翅膀 / Bat Wing
         "684", // 虫肉 / Bug Meat
         "768", // 太阳精华 / Solar Essence
         "769", // 虚空精华 / Void Essence
+        "772", // 大蒜油 / Oil of Garlic
+        "773", // 生命药水 / Life Elixir
         
         // ===== 宝石 / Gems =====
         "60",  // 绿宝石 / Emerald
@@ -138,6 +144,12 @@ public static class ItemDefinitions
         "454", // 远古水果 / Ancient Fruit
         "304", // 啤酒花 / Hops
         
+        // 新作物 / New Crops
+        "Carrot", // 胡萝卜 / Carrot
+        "Broccoli", // 西兰花 / Broccoli
+        "Powdermelon", // 粉瓜 / Powdermelon
+        "SummerSquash", // 夏南瓜 / Summer Squash
+        
         // 种子 / Seeds
         "472", // 防风草种子 / Parsnip Seeds
         "473", // 豆子种子 / Bean Starter
@@ -170,6 +182,7 @@ public static class ItemDefinitions
         "499", // 远古种子 / Ancient Seeds
         "802", // 仙人掌种子 / Cactus Seeds
         "833", // 菠萝种子 / Pineapple Seeds
+        "MysticTreeSeed", // 神秘树种子 / Mystic Tree Seed
         
         // 热带水果 / Tropical Fruits
         "88",  // 椰子 / Coconut
@@ -434,6 +447,9 @@ public static class ItemDefinitions
         "611", // 黑莓馅饼 / Blackberry Cobbler
         "612", // 蔓越莓糖果 / Cranberry Candy
         "618", // 意式烤面包 / Bruschetta
+        "SeaJelly", // 海果冻 / Sea Jelly
+        "CaveJelly", // 洞穴果冻 / Cave Jelly
+        "RiverJelly", // 河流果冻 / River Jelly
         
         // 饮料 / Beverages
         "395", // 咖啡 / Coffee
@@ -454,6 +470,10 @@ public static class ItemDefinitions
         "457", // 淡肉汤 / Pale Broth
         "459", // 蜂蜜酒 / Mead
         "614", // 绿茶 / Green Tea
+        "Raisins", // 葡萄干 / Raisins
+        "DriedFruit", // 干果 / Dried Fruit
+        "DriedMushrooms", // 干蘑菇 / Dried Mushrooms
+        "StardropTea", // 星之果实茶 / Stardrop Tea
         
         // 调味料 / Condiments
         "245", // 糖 / Sugar
@@ -499,6 +519,11 @@ public static class ItemDefinitions
         "879", // 怪物麝香 / Monster Musk
         "881", // 骨头碎片 / Bone Fragment
         "890", // Qi豆 / Qi Bean
+        "SmokedFish", // 熏鱼 / Smoked Fish
+        "GoldenMysteryBox", // 金色神秘盒 / Golden Mystery Box
+        "872", // 仙女粉尘 / Fairy Dust
+        "PrizeTicket", // 奖品券 / Prize Ticket
+        "TreasureTotem", // 宝藏图腾 / Treasure Totem
         
         // ===== 装饰和路径 / Decorations and Paths =====
         "401", // 稻草地板 / Straw Floor
@@ -582,7 +607,8 @@ public static class ItemDefinitions
         "899", // 安格勒女士 / Ms. Angler
         "900", // 传说鱼II / Legend II
         "901", // 放射性鲤鱼 / Radioactive Carp
-        "902"  // 小冰川鱼 / Glacierfish Jr.
+        "902", // 小冰川鱼 / Glacierfish Jr.
+        "Goby"  // 虾虎鱼 / Goby
     };
 
     /// <summary>
