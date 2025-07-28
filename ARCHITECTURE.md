@@ -38,10 +38,10 @@ modtools/
 ### 3. **ItemDefinitions.cs** - 物品定义
 - **职责**: 管理所有物品ID集合和相关的辅助方法
 - **包含**:
-  - `ResourceItemIds`: 资源类物品ID白名单
-  - `FishItemIds`: 鱼类物品ID集合
-  - `IsFish()`: 检查物品是否为鱼类
-  - `IsResourceItem()`: 检查物品是否为资源类物品
+  - `ResourceItemIds`: 资源类物品ID白名单（字符串格式）
+  - `FishItemIds`: 鱼类物品ID集合（字符串格式）
+  - `IsFish()`: 检查物品是否为鱼类（使用ItemId比对）
+  - `IsResourceItem()`: 检查物品是否为资源类物品（使用ItemId比对）
 
 ### 4. **ResourceMultiplier.cs** - 资源倍增
 - **职责**: 处理资源物品的倍增逻辑
