@@ -35,32 +35,9 @@ public class ModEntry : Mod
         helper.Events.Input.ButtonPressed += OnButtonPressed;
         
         Monitor.Log($"ModTools loaded successfully - Multiplier: {Config.Multiplier}", LogLevel.Info);
-        Monitor.Log($"Resource items count: {ItemDefinitions.ResourceItemIds.Count}", LogLevel.Info);
-        Monitor.Log($"Fish items count: {ItemDefinitions.FishItemIds.Count}", LogLevel.Info);
     }
 
-    /// <summary>
-    /// 打印物品ID信息 / Print item ID information
-    /// </summary>
-    /// <param name="item">物品 / Item</param>
-    /// <param name="context">上下文 / Context</param>
-    private void LogItemId(Item item, string context)
-    {
-        if (item is SObject obj)
-        {
-            bool isResource = ItemDefinitions.IsResourceItem(obj);
-            bool isFish = ItemDefinitions.IsFish(obj);
-            string flags = "";
-            if (isResource) flags += " [Resource]";
-            if (isFish) flags += " [Fish]";
-            
-            Monitor.Log($"[ItemID] {context}: {obj.Name} (ID: {obj.ItemId}, QualifiedID: {obj.QualifiedItemId}){flags}", LogLevel.Info);
-        }
-        else
-        {
-            Monitor.Log($"[ItemID] {context}: {item.Name} (Type: {item.GetType().Name})", LogLevel.Info);
-        }
-    }
+
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
@@ -80,14 +57,12 @@ public class ModEntry : Mod
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
-        Monitor.Log("Game launched - initializing GMCM integration", LogLevel.Info);
         var api = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
         if (api is null)
         {
             Monitor.Log("GMCM API not found - using custom config menu only", LogLevel.Warn);
             return;
         }
-        Monitor.Log("GMCM API found - registering configuration options", LogLevel.Info);
         
         RegisterGMCMOptions(api);
     }
@@ -253,27 +228,11 @@ public class ModEntry : Mod
         if (Config.ReloadKey.JustPressed())
         {
             Config = Helper.ReadConfig<ModConfig>();
-            Monitor.Log("Configuration reloaded from file", LogLevel.Info);
         }
     }
 
     private void OnInventoryChanged(object? sender, InventoryChangedEventArgs e)
     {
-        // 打印新增物品的ID信息 / Print ID information for new items
-        foreach (var item in e.Added)
-        {
-            LogItemId(item, "Item Added");
-        }
-        
-        // 打印数量变化的物品ID信息 / Print ID information for quantity changed items
-        foreach (var entry in e.QuantityChanged)
-        {
-            if (entry.Item != null)
-            {
-                LogItemId(entry.Item, $"Quantity Changed ({entry.OldSize} -> {entry.NewSize})");
-            }
-        }
-        
         resourceMultiplier.OnInventoryChanged(e);
     }
 

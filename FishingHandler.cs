@@ -27,24 +27,7 @@ public class FishingHandler
         this.monitor = monitor;
     }
 
-    /// <summary>
-    /// 打印钓鱼获得的物品信息 / Print fishing catch item information
-    /// </summary>
-    /// <param name="item">获得的物品 / Caught item</param>
-    /// <param name="isTreasure">是否为宝藏 / Whether it's a treasure</param>
-    private void LogFishingCatch(Item item, bool isTreasure = false)
-    {
-        if (item is SObject obj)
-        {
-            string itemType = isTreasure ? "Treasure" : "Fish";
-            monitor.Log($"[FishingLog] Caught {itemType}: {obj.Name} (ID: {obj.ItemId}, QualifiedID: {obj.QualifiedItemId}), Stack: {obj.Stack}", LogLevel.Info);
-        }
-        else
-        {
-            string itemType = isTreasure ? "Treasure" : "Fish";
-            monitor.Log($"[FishingLog] Caught {itemType}: {item.Name} (Type: {item.GetType().Name}), Stack: {item.Stack}", LogLevel.Info);
-        }
-    }
+
 
     /// <summary>
     /// 处理钓鱼游戏更新 / Handle fishing game updates
@@ -82,14 +65,10 @@ public class FishingHandler
         {
             if (config.InfiniteBait && rod.attachments?.Length > 0 && rod.attachments[0] != null)
             {
-                var bait = rod.attachments[0];
-                monitor.Log($"[FishingLog] Infinite bait active: {bait.Name} (ID: {bait.ItemId}, QualifiedID: {bait.QualifiedItemId})", LogLevel.Debug);
                 rod.attachments[0].Stack = rod.attachments[0].maximumStackSize();
             }
             if (config.InfiniteTackle && rod.attachments?.Length > 1 && rod.attachments[1] != null)
             {
-                var tackle = rod.attachments[1];
-                monitor.Log($"[FishingLog] Infinite tackle active: {tackle.Name} (ID: {tackle.ItemId}, QualifiedID: {tackle.QualifiedItemId})", LogLevel.Debug);
                 rod.attachments[1].uses.Value = 0;
             }
         }
@@ -103,8 +82,6 @@ public class FishingHandler
         // 开始钓鱼游戏 - 只应用修改一次 / Begin fishing game - only apply modifications once
         if (!beganFishingGame.Value && updateIndex.Value > 15)
         {
-            monitor.Log($"[FishingLog] Starting fishing minigame - Difficulty: {bobber.difficulty}", LogLevel.Info);
-            
             // 存储原始难度用于奖励计算 / Store original difficulty for reward calculation
             var originalDifficulty = bobber.difficulty;
             
@@ -112,7 +89,6 @@ public class FishingHandler
             if (config.EasierFishing)
             {
                 bobber.motionType = 2; // 更容易的运动模式 / Easier motion pattern
-                monitor.Log("[FishingLog] Easier fishing mode enabled", LogLevel.Info);
             }
             
             // 应用难度倍数和加法（限制在合理值内） / Apply difficulty multiplier and additive (clamped to reasonable values)
@@ -123,7 +99,6 @@ public class FishingHandler
             if (config.AlwaysFindTreasure)
             {
                 bobber.treasure = true;
-                monitor.Log("[FishingLog] Always find treasure enabled", LogLevel.Info);
             }
                 
             if (config.InstantCatchFish)
@@ -131,14 +106,12 @@ public class FishingHandler
                 if (bobber.treasure)
                     bobber.treasureCaught = true;
                 bobber.distanceFromCatching += 100;
-                monitor.Log("[FishingLog] Instant catch fish enabled", LogLevel.Info);
             }
             
             if (config.InstantCatchTreasure)
             {
                 if (bobber.treasure || config.AlwaysFindTreasure)
                     bobber.treasureCaught = true;
-                monitor.Log("[FishingLog] Instant catch treasure enabled", LogLevel.Info);
             }
             
             beganFishingGame.Value = true;
@@ -162,8 +135,6 @@ public class FishingHandler
     {
         if (e.NewMenu is BobberBar bobberBar)
         {
-            monitor.Log("[FishingLog] Fishing minigame started", LogLevel.Info);
-            
             try
             {
                 // 应用钓鱼条高度修改 / Apply fishing bar height modification
@@ -173,7 +144,6 @@ public class FishingHandler
                     if (barHeightField != null)
                     {
                         barHeightField.SetValue(config.FishingBarHeight);
-                        monitor.Log($"[FishingLog] Fishing bar height set to: {config.FishingBarHeight}", LogLevel.Debug);
                     }
                 }
                 
@@ -196,7 +166,6 @@ public class FishingHandler
                                 if (currentSpeed is float speed)
                                 {
                                     speedField.SetValue(fish, speed * config.FishMovementSpeedMultiplier);
-                                    monitor.Log($"[FishingLog] Fish movement speed modified: {speed} -> {speed * config.FishMovementSpeedMultiplier}", LogLevel.Debug);
                                 }
                             }
                             
@@ -208,7 +177,6 @@ public class FishingHandler
                                 if (currentPatternSpeed is float patternSpeed)
                                 {
                                     patternSpeedField.SetValue(fish, patternSpeed * config.FishMovementSpeedMultiplier);
-                                    monitor.Log($"[FishingLog] Fish pattern speed modified: {patternSpeed} -> {patternSpeed * config.FishMovementSpeedMultiplier}", LogLevel.Debug);
                                 }
                             }
                         }
@@ -220,21 +188,12 @@ public class FishingHandler
                 {
                     // 这需要在UpdateTicked方法中实现 / This would need to be implemented in the UpdateTicked method
                     // 因为我们需要持续检查鱼是否咬钩 / as we need to continuously check for fish biting
-                    monitor.Log("[FishingLog] Auto-hook enabled", LogLevel.Info);
                 }
             }
             catch (Exception ex)
             {
                 monitor.Log($"Error modifying fishing minigame: {ex}", LogLevel.Error);
             }
-        }
-        else if (e.OldMenu is BobberBar)
-        {
-            // 钓鱼游戏结束，检查是否获得了物品 / Fishing game ended, check if items were obtained
-            monitor.Log("[FishingLog] Fishing minigame ended", LogLevel.Info);
-            
-            // 这里可以添加检查玩家最近获得的物品的逻辑
-            // 但由于事件顺序问题，最好在InventoryChanged事件中处理
         }
     }
 } 

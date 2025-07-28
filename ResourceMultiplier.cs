@@ -30,22 +30,7 @@ public class ResourceMultiplier
         config.Multiplier > 100 ? 100 :
         config.Multiplier;
 
-    /// <summary>
-    /// 打印物品信息 / Print item information
-    /// </summary>
-    /// <param name="item">物品 / Item</param>
-    /// <param name="action">动作描述 / Action description</param>
-    private void LogItemInfo(Item item, string action)
-    {
-        if (item is SObject obj)
-        {
-            monitor.Log($"[ItemLog] {action} - ID: {obj.ItemId}, QualifiedID: {obj.QualifiedItemId}, Name: {obj.Name}, Stack: {obj.Stack}", LogLevel.Info);
-        }
-        else
-        {
-            monitor.Log($"[ItemLog] {action} - Type: {item.GetType().Name}, Name: {item.Name}, Stack: {item.Stack}", LogLevel.Info);
-        }
-    }
+
 
     /// <summary>
     /// 处理库存变化 / Handle inventory changes
@@ -65,14 +50,8 @@ public class ResourceMultiplier
             if (item == null || entry.NewSize <= entry.OldSize || entry.NewSize - entry.OldSize > 1)
                 continue;
 
-            // 打印物品信息 / Log item information
-            LogItemInfo(item, $"Quantity Changed (Old: {entry.OldSize}, New: {entry.NewSize})");
-
             if (item is SObject obj && ItemDefinitions.IsResourceItem(obj))
             {
-                monitor.Log($"[ResourceMultiplier] Resource item detected: {obj.Name} (ID: {obj.ItemId})", LogLevel.Info);
-                monitor.Log($"[ResourceMultiplier] Resource item detected: {obj.Name} (QualifiedItemId: {obj.QualifiedItemId})", LogLevel.Info);
-                
                 int delta = entry.NewSize - entry.OldSize;
                 int extra = delta * (EffectiveMultiplier - 1); // N获得，额外加(N*(倍数-1)) / N obtained, add extra (N*(multiplier-1))
                 if (extra > 0)
@@ -91,13 +70,8 @@ public class ResourceMultiplier
         // 处理新增物品堆叠 / Handle new item stacks
         foreach (var item in e.Added)
         {
-            // 打印物品信息 / Log item information
-            LogItemInfo(item, "Item Added");
-
             if (item is SObject obj && ItemDefinitions.IsResourceItem(obj))
             {
-                monitor.Log($"[ResourceMultiplier] Resource item detected: {obj.Name} (ID: {obj.ItemId})", LogLevel.Info);
-                monitor.Log($"[ResourceMultiplier] Resource item detected: {obj.Name} (QualifiedItemId: {obj.QualifiedItemId})", LogLevel.Info);
                 if (item.Stack > 1)
                 {
                     continue;
