@@ -41,7 +41,7 @@
 1. 在游戏中获得任何资源物品（如木头、石头、矿石等）
 2. 查看日志中应该出现：
    ```
-   [ItemID] Item Added: Wood (ID: 388) [Resource]
+   [ItemID] Item Added: Wood (ID: 388, QualifiedID: (O)388) [Resource]
    [ResourceMultiplier] Resource item detected: Wood (ID: 388)
    [ResourceMultiplier] Adding X extra Wood (multiplier: 3)
    ```
@@ -52,15 +52,15 @@
    ```
    [FishingLog] Fishing minigame started
    [FishingLog] Starting fishing minigame - Difficulty: X
-   [FishingLog] Caught Fish: Tuna (ID: 130), Stack: 1
+   [FishingLog] Caught Fish: Tuna (ID: 130, QualifiedID: (O)130), Stack: 1
    ```
 
 ### 4. 测试无限鱼饵/鱼钩日志
 1. 在钓鱼竿上装备鱼饵和鱼钩
 2. 查看日志中应该出现：
    ```
-   [FishingLog] Infinite bait active: Bait (ID: 685)
-   [FishingLog] Infinite tackle active: Spinner (ID: 686)
+   [FishingLog] Infinite bait active: Bait (ID: 685, QualifiedID: (O)685)
+   [FishingLog] Infinite tackle active: Spinner (ID: 686, QualifiedID: (O)686)
    ```
 
 ## 日志文件位置 / Log File Location
@@ -89,10 +89,11 @@
 
 ## 注意事项 / Notes
 
-1. 日志会记录所有物品的ID，包括资源物品、鱼类、工具等
-2. 资源倍增功能只对资源类物品生效
+1. 日志会记录所有物品的ID和QualifiedID，包括资源物品、鱼类、工具等
+2. 资源倍增功能只对资源类物品生效（QualifiedItemId以(O)开头）
 3. 钓鱼日志会记录钓鱼游戏的各种状态变化
 4. 日志文件可能会变得很大，建议定期清理
+5. 新的判断逻辑使用QualifiedItemId，更准确地识别资源物品
 
 ## 故障排除 / Troubleshooting
 

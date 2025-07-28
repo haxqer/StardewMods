@@ -17,9 +17,9 @@
 
 #### 日志格式 / Log Format
 ```
-[ItemID] Item Added: Wood (ID: 388) [Resource]
-[ItemID] Quantity Changed (1 -> 3): Stone (ID: 390) [Resource]
-[ItemID] Item Added: Tuna (ID: 130) [Fish]
+[ItemID] Item Added: Wood (ID: 388, QualifiedID: (O)388) [Resource]
+[ItemID] Quantity Changed (1 -> 3): Stone (ID: 390, QualifiedID: (O)390) [Resource]
+[ItemID] Item Added: Tuna (ID: 130, QualifiedID: (O)130) [Fish]
 ```
 
 ### 2. 资源倍增日志 / Resource Multiplier Logging
@@ -34,7 +34,7 @@
 
 #### 日志格式 / Log Format
 ```
-[ItemLog] Item Added - ID: 388, Name: Wood, Stack: 1
+[ItemLog] Item Added - ID: 388, QualifiedID: (O)388, Name: Wood, Stack: 1
 [ResourceMultiplier] Resource item detected: Wood (ID: 388)
 [ResourceMultiplier] Adding 2 extra Wood (multiplier: 3)
 ```
@@ -56,7 +56,7 @@
 [FishingLog] Fishing minigame started
 [FishingLog] Starting fishing minigame - Difficulty: 25
 [FishingLog] Easier fishing mode enabled
-[FishingLog] Infinite bait active: Bait (ID: 685)
+[FishingLog] Infinite bait active: Bait (ID: 685, QualifiedID: (O)685)
 [FishingLog] Fishing bar height set to: 400
 [FishingLog] Fish movement speed modified: 1.0 -> 0.7
 ```
@@ -83,7 +83,13 @@ GMCM API found - registering configuration options
 
 ## 技术实现 / Technical Implementation
 
-### 1. 日志级别 / Log Levels
+### 1. 物品ID系统 / Item ID System
+- **ItemId**: 物品的数字ID（如 388 表示木头）
+- **QualifiedItemId**: 完整的物品标识符（如 (O)388 表示木头对象）
+- **资源判断**: 使用 `QualifiedItemId.StartsWith("(O)")` 来判断是否为资源物品
+- **鱼类判断**: 使用 `QualifiedItemId.StartsWith("(O)")` 和 `FishItemIds` 集合来判断
+
+### 2. 日志级别 / Log Levels
 - **Info**: 重要的游戏事件和物品信息
 - **Debug**: 详细的调试信息
 - **Warn**: 警告信息

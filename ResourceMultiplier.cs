@@ -39,7 +39,7 @@ public class ResourceMultiplier
     {
         if (item is SObject obj)
         {
-            monitor.Log($"[ItemLog] {action} - ID: {obj.ItemId}, Name: {obj.Name}, Stack: {obj.Stack}", LogLevel.Info);
+            monitor.Log($"[ItemLog] {action} - ID: {obj.ItemId}, QualifiedID: {obj.QualifiedItemId}, Name: {obj.Name}, Stack: {obj.Stack}", LogLevel.Info);
         }
         else
         {

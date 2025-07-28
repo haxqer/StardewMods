@@ -37,7 +37,7 @@ public class FishingHandler
         if (item is SObject obj)
         {
             string itemType = isTreasure ? "Treasure" : "Fish";
-            monitor.Log($"[FishingLog] Caught {itemType}: {obj.Name} (ID: {obj.ItemId}), Stack: {obj.Stack}", LogLevel.Info);
+            monitor.Log($"[FishingLog] Caught {itemType}: {obj.Name} (ID: {obj.ItemId}, QualifiedID: {obj.QualifiedItemId}), Stack: {obj.Stack}", LogLevel.Info);
         }
         else
         {
@@ -83,13 +83,13 @@ public class FishingHandler
             if (config.InfiniteBait && rod.attachments?.Length > 0 && rod.attachments[0] != null)
             {
                 var bait = rod.attachments[0];
-                monitor.Log($"[FishingLog] Infinite bait active: {bait.Name} (ID: {bait.ItemId})", LogLevel.Debug);
+                monitor.Log($"[FishingLog] Infinite bait active: {bait.Name} (ID: {bait.ItemId}, QualifiedID: {bait.QualifiedItemId})", LogLevel.Debug);
                 rod.attachments[0].Stack = rod.attachments[0].maximumStackSize();
             }
             if (config.InfiniteTackle && rod.attachments?.Length > 1 && rod.attachments[1] != null)
             {
                 var tackle = rod.attachments[1];
-                monitor.Log($"[FishingLog] Infinite tackle active: {tackle.Name} (ID: {tackle.ItemId})", LogLevel.Debug);
+                monitor.Log($"[FishingLog] Infinite tackle active: {tackle.Name} (ID: {tackle.ItemId}, QualifiedID: {tackle.QualifiedItemId})", LogLevel.Debug);
                 rod.attachments[1].uses.Value = 0;
             }
         }

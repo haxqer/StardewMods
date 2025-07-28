@@ -618,7 +618,11 @@ public static class ItemDefinitions
     /// <returns>如果是鱼类返回true，否则返回false / Returns true if the item is a fish, false otherwise</returns>
     public static bool IsFish(SObject item)
     {
-        return item != null && FishItemIds.Contains(item.ItemId);
+        if (item == null)
+            return false;
+            
+        // 使用QualifiedItemId判断，以(O)开头且是鱼类ID的都是鱼类 / Use QualifiedItemId to check, items starting with (O) and in fish list are fish
+        return item.QualifiedItemId.StartsWith("(O)") && FishItemIds.Contains(item.ItemId);
     }
 
     /// <summary>
@@ -628,6 +632,10 @@ public static class ItemDefinitions
     /// <returns>如果是资源类物品返回true，否则返回false / Returns true if the item is a resource item, false otherwise</returns>
     public static bool IsResourceItem(SObject item)
     {
-        return item != null && ResourceItemIds.Contains(item.ItemId);
+        if (item == null)
+            return false;
+            
+        // 使用QualifiedItemId判断，以(O)开头的都是资源 / Use QualifiedItemId to check, items starting with (O) are resources
+        return item.QualifiedItemId.StartsWith("(O)");
     }
 } 

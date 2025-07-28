@@ -54,7 +54,7 @@ public class ModEntry : Mod
             if (isResource) flags += " [Resource]";
             if (isFish) flags += " [Fish]";
             
-            Monitor.Log($"[ItemID] {context}: {obj.Name} (ID: {obj.ItemId}){flags}", LogLevel.Info);
+            Monitor.Log($"[ItemID] {context}: {obj.Name} (ID: {obj.ItemId}, QualifiedID: {obj.QualifiedItemId}){flags}", LogLevel.Info);
         }
         else
         {
