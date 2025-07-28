@@ -2,6 +2,7 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
+using SObject = StardewValley.Object;
 
 namespace modtools;
 
@@ -33,7 +34,32 @@ public class ModEntry : Mod
         helper.Events.Display.MenuChanged += OnMenuChanged;
         helper.Events.Input.ButtonPressed += OnButtonPressed;
         
-        Monitor.Log($"Loaded Multiplier: {Config.Multiplier}", LogLevel.Info);
+        Monitor.Log($"ModTools loaded successfully - Multiplier: {Config.Multiplier}", LogLevel.Info);
+        Monitor.Log($"Resource items count: {ItemDefinitions.ResourceItemIds.Count}", LogLevel.Info);
+        Monitor.Log($"Fish items count: {ItemDefinitions.FishItemIds.Count}", LogLevel.Info);
+    }
+
+    /// <summary>
+    /// 打印物品ID信息 / Print item ID information
+    /// </summary>
+    /// <param name="item">物品 / Item</param>
+    /// <param name="context">上下文 / Context</param>
+    private void LogItemId(Item item, string context)
+    {
+        if (item is SObject obj)
+        {
+            bool isResource = ItemDefinitions.IsResourceItem(obj);
+            bool isFish = ItemDefinitions.IsFish(obj);
+            string flags = "";
+            if (isResource) flags += " [Resource]";
+            if (isFish) flags += " [Fish]";
+            
+            Monitor.Log($"[ItemID] {context}: {obj.Name} (ID: {obj.ItemId}){flags}", LogLevel.Info);
+        }
+        else
+        {
+            Monitor.Log($"[ItemID] {context}: {item.Name} (Type: {item.GetType().Name})", LogLevel.Info);
+        }
     }
 
     private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
@@ -49,19 +75,19 @@ public class ModEntry : Mod
     private void SaveConfig()
     {
         Helper.WriteConfig(Config);
-        Monitor.Log($"Multiplier set to: {Config.Multiplier}", LogLevel.Info);
+        Monitor.Log($"Configuration saved - Multiplier: {Config.Multiplier}", LogLevel.Info);
     }
 
     private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
     {
-        Monitor.Log("OnGameLaunched called", LogLevel.Info);
+        Monitor.Log("Game launched - initializing GMCM integration", LogLevel.Info);
         var api = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
         if (api is null)
         {
-            Monitor.Log("GMCM API not found", LogLevel.Warn);
+            Monitor.Log("GMCM API not found - using custom config menu only", LogLevel.Warn);
             return;
         }
-        Monitor.Log("GMCM API found, registering config", LogLevel.Info);
+        Monitor.Log("GMCM API found - registering configuration options", LogLevel.Info);
         
         RegisterGMCMOptions(api);
     }
@@ -106,9 +132,9 @@ public class ModEntry : Mod
             ModManifest,
             Helper.Translation.Get("config.gmcm.fish-difficulty-additive"),
             Helper.Translation.Get("config.gmcm.fish-difficulty-additive-desc"),
-            () => (int)(Config.FishDifficultyAdditive + 50),
-            val => { Config.FishDifficultyAdditive = val - 50; Helper.WriteConfig(Config); },
-            0, 100
+            () => (int)Config.FishDifficultyAdditive,
+            val => { Config.FishDifficultyAdditive = val; Helper.WriteConfig(Config); },
+            -50, 50
         );
         
         api.RegisterSimpleOption(
@@ -138,14 +164,13 @@ public class ModEntry : Mod
         
         api.RegisterClampedOption(
             ModManifest,
-            Helper.Translation.Get("config.gmcm.fish-movement-speed"),
-            Helper.Translation.Get("config.gmcm.fish-movement-speed-desc"),
+            Helper.Translation.Get("config.gmcm.fish-movement-speed-multiplier"),
+            Helper.Translation.Get("config.gmcm.fish-movement-speed-multiplier-desc"),
             () => (int)(Config.FishMovementSpeedMultiplier * 100),
             val => { Config.FishMovementSpeedMultiplier = val / 100f; Helper.WriteConfig(Config); },
             10, 100
         );
         
-        // Fishing convenience options
         api.RegisterSimpleOption(
             ModManifest,
             Helper.Translation.Get("config.gmcm.always-perfect"),
@@ -228,12 +253,27 @@ public class ModEntry : Mod
         if (Config.ReloadKey.JustPressed())
         {
             Config = Helper.ReadConfig<ModConfig>();
-            Monitor.Log("Config reloaded", LogLevel.Info);
+            Monitor.Log("Configuration reloaded from file", LogLevel.Info);
         }
     }
 
     private void OnInventoryChanged(object? sender, InventoryChangedEventArgs e)
     {
+        // 打印新增物品的ID信息 / Print ID information for new items
+        foreach (var item in e.Added)
+        {
+            LogItemId(item, "Item Added");
+        }
+        
+        // 打印数量变化的物品ID信息 / Print ID information for quantity changed items
+        foreach (var entry in e.QuantityChanged)
+        {
+            if (entry.Item != null)
+            {
+                LogItemId(entry.Item, $"Quantity Changed ({entry.OldSize} -> {entry.NewSize})");
+            }
+        }
+        
         resourceMultiplier.OnInventoryChanged(e);
     }
 

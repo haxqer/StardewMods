@@ -138,7 +138,22 @@ If you encounter issues, please check the SMAPI log files:
 - macOS: `~/.config/StardewValley/ErrorLogs/`
 - Linux: `~/.config/StardewValley/ErrorLogs/`
 
+### Item ID Logging
+The mod now includes comprehensive item ID logging functionality:
+- **Item ID Logging**: Logs all items added to inventory with their IDs and types
+- **Resource Multiplier Logging**: Detailed logs when resource items are detected and multiplied
+- **Fishing Logging**: Logs fishing activities and caught items
+- **Debug Information**: Additional debug logs for fishing mechanics and configuration changes
+
+Log entries include item names, IDs, stack sizes, and special flags for resource/fish items.
+
 ## Changelog
+
+### v1.0.1
+- Added comprehensive item ID logging functionality
+- Enhanced resource multiplier logging
+- Added fishing activity logging
+- Improved debug information for configuration changes
 
 ### v1.0.0
 - Initial release
