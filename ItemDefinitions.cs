@@ -636,6 +636,35 @@ public static class ItemDefinitions
             return false;
             
         // 使用QualifiedItemId判断，以(O)开头的都是资源 / Use QualifiedItemId to check, items starting with (O) are resources
-        return item.QualifiedItemId.StartsWith("(O)") && ResourceItemIds.Contains(item.ItemId);
+        // return item.QualifiedItemId.StartsWith("(O)") && ResourceItemIds.Contains(item.ItemId);ith (O) are resources
+        // return item.QualifiedItemId.StartsWith("(O)") && IsStackable(item);
+        return IsStackable(item);
+    }
+
+    /// <summary>
+    /// 检查物品是否可堆叠 / Check if an item is stackable
+    /// </summary>
+    /// <param name="item">要检查的物品 / Item to check</param>
+    /// <returns>如果物品可堆叠返回true，否则返回false / Returns true if the item is stackable, false otherwise</returns>
+    public static bool IsStackable(Item item)
+    {
+        if (item == null)
+            return false;
+            
+        // 如果最大堆叠数量大于1，则物品可堆叠 / If maximum stack size is greater than 1, item is stackable
+        return item.maximumStackSize() > 1;
+    }
+
+    /// <summary>
+    /// 获取物品的最大堆叠数量 / Get the maximum stack size of an item
+    /// </summary>
+    /// <param name="item">要检查的物品 / Item to check</param>
+    /// <returns>物品的最大堆叠数量 / Maximum stack size of the item</returns>
+    public static int GetMaximumStackSize(Item item)
+    {
+        if (item == null)
+            return 0;
+            
+        return item.maximumStackSize();
     }
 } 
